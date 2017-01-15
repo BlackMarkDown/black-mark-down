@@ -1,5 +1,7 @@
+import AWS from 'aws-sdk';
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
+import { refreshBucket } from '../PostManager/bucket';
 
 const logIn = (username, password) => new Promise((resolve, reject) => {
   const authenticationData = {
@@ -15,7 +17,17 @@ const logIn = (username, password) => new Promise((resolve, reject) => {
   const cognitoUser = new CognitoUser(userData);
 
   cognitoUser.authenticateUser(authenticationDetails, {
-    onSuccess: resolve,
+    onSuccess: (result) => {
+      AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+        IdentityPoolId: process.env.AWS_COGNITO_IDENTITY_POOL_ID,
+        Logins: {
+          [`cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`]: result.getIdToken().getJwtToken(),
+        },
+      });
+
+      refreshBucket();
+      resolve(result);
+    },
     onFailure: err => reject(err),
   });
 });

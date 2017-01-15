@@ -1,7 +1,7 @@
-import s3 from './s3Instance';
+import { getBucket } from './bucket';
 
 function post(title, content) {
-  return s3.upload({
+  return getBucket().upload({
     Key: title,
     Body: content,
     ACL: 'public-read',

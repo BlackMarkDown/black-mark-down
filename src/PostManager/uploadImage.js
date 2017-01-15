@@ -1,10 +1,10 @@
 import uuid from 'uuid';
-import s3 from './s3Instance';
+import { getBucket } from './bucket';
 
 function uploadImage(name, file) {
   const key = `${name}_${uuid()}`;
 
-  return s3.upload({
+  return getBucket().upload({
     Key: key,
     Body: file,
     ACL: 'public-read',
