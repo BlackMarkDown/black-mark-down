@@ -1,8 +1,11 @@
-import login from 'src/IdentityManager/login';
+import logIn from 'src/IdentityManager/logIn';
 
 describe('IdentityManager/login.js', () => {
-  it('should success to log in with test ID', (done) => {
-    login(__AWS_COGNITO_TEST_USERNAME__, __AWS_COGNITO_TEST_PASSWORD__)
-    .then(done);
+  it('should success to log in with test ID', () => {
+    const {
+      AWS_COGNITO_TEST_USERNAME: username,
+      AWS_COGNITO_TEST_PASSWORD: password,
+    } = process.env;
+    return logIn(username, password);
   });
 });

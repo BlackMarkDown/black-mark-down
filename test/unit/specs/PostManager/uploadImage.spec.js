@@ -1,21 +1,15 @@
-import uuid from 'uuid';
-import fetch from 'node-fetch';
+/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
+/* global fetch */
+import 'whatwg-fetch';
 import uploadImage from 'src/PostManager/uploadImage';
 
-
 describe('PostManager/uploadImage.js', () => {
-  let imageFile;
-  before((done) => {
-    fetch('http://www.w3schools.com/css/paris.jpg')
+  let image;
+  before(() => fetch('http://placehold.it/120x120&text=image1')
     .then(response => response.blob())
-    .then((myBlob) => {
-      imageFile = myBlob;
-      done();
-    });
-  });
+    .then((blob) => {
+      image = blob;
+    }));
 
-  it('should success to upload image into S3', (done) => {
-    uploadImage('test', imageFile)
-    .then(done);
-  });
+  it('should success to upload image into S3', () => uploadImage('test', image));
 });

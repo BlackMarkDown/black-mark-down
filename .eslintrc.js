@@ -27,11 +27,4 @@ module.exports = {
     // allow debugger during development
     'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
   },
-  globals: {
-    __AWS_COGNITO_USER_POOL_ID__: false,
-    __AWS_COGNITO_APP_ID__: false,
-    __AMAZON_S3_BUCKET_NAME__: false,
-    __AWS_COGNITO_TEST_USERNAME__: false,
-    __AWS_COGNITO_TEST_PASSWORD__: false,
-  },
 }
