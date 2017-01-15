@@ -1,6 +1,6 @@
 import uuid from 'uuid';
-import post from 'src/PostManager/post';
-import logIn from 'src/IdentityManager/logIn';
+import post from 'src/aws/PostManager/post';
+import logIn from 'src/aws/IdentityManager/logIn';
 
 describe('PostManager/post.js', () => {
   before(() => {
@@ -11,5 +11,5 @@ describe('PostManager/post.js', () => {
     return logIn(username, password);
   });
 
-  it('should success to post into S3', () => post(`test-${uuid()}`, 'test')).timeout(0);
+  it('should success to post into S3', () => post(`test-${uuid()}`, 'test'));
 });

@@ -1,7 +1,8 @@
 import AWS from 'aws-sdk';
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
-import { refreshBucket } from '../PostManager/bucket';
+import { refreshBucket } from '../bucket';
+import { refreshTable } from '../table';
 
 const logIn = (username, password) => new Promise((resolve, reject) => {
   const authenticationData = {
@@ -26,6 +27,8 @@ const logIn = (username, password) => new Promise((resolve, reject) => {
       });
 
       refreshBucket();
+      refreshTable();
+
       resolve(result);
     },
     onFailure: err => reject(err),

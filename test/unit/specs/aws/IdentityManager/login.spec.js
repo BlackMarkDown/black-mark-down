@@ -1,4 +1,4 @@
-import logIn from 'src/IdentityManager/logIn';
+import logIn from 'src/aws/IdentityManager/logIn';
 
 describe('IdentityManager/login.js', () => {
   it('should success to log in with test ID', () => {

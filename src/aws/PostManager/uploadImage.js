@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import { getBucket } from './bucket';
+import { getBucket } from '../bucket';
 
 function uploadImage(name, file) {
   const key = `${name}_${uuid()}`;

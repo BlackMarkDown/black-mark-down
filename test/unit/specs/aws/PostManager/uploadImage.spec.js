@@ -1,7 +1,7 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
 /* global fetch */
 import 'whatwg-fetch';
-import uploadImage from 'src/PostManager/uploadImage';
+import uploadImage from 'src/aws/PostManager/uploadImage';
 
 describe('PostManager/uploadImage.js', () => {
   let image;

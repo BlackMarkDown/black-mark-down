@@ -1,4 +1,4 @@
-import { getBucket } from './bucket';
+import { getBucket } from '../bucket';
 
 function post(title, content) {
   return getBucket().upload({
