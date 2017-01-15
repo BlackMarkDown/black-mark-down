@@ -1,14 +1,19 @@
+import { CognitoUser } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
 
-const verifyEmail = verificationCode => new Promise((resolve, reject) => {
-  userPool.getCurrentSessionValidUser()
-  .then((cognitoUser) => {
-    cognitoUser.verifyAttribute('email', verificationCode, {
-      onSuccess: result => resolve(result),
-      onFailure: err => reject(err),
-    });
-  })
-  .catch(err => reject(err));
+const verifyEmail = (username, verificationCode) => new Promise((resolve, reject) => {
+  const userData = {
+    Username: username,
+    Pool: userPool,
+  };
+
+  const cognitoUser = new CognitoUser(userData);
+  cognitoUser.confirmRegistration(verificationCode, true, (err, result) => {
+    if (err) {
+      return reject(err);
+    }
+    return resolve(result);
+  });
 });
 
 export default verifyEmail;
