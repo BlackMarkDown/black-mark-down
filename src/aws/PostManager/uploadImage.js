@@ -13,7 +13,7 @@ function uploadImage(name, file) {
     ACL: 'public-read',
   })
   .promise()
-  .then(() => `http://${process.env.AMAZON_S3_BUCKET_NAME}.s3-${process.env.AWS_REGION}.amazonaws.com/${key}`);
+  .then(data => data.Location);
 }
 
 export default uploadImage;

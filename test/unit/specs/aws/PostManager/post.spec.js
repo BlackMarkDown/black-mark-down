@@ -11,5 +11,5 @@ describe('PostManager/post.js', () => {
     return logIn(username, password);
   });
 
-  it('should success to post into S3', () => post(`test-${uuid()}`, 'test'));
+  it('should success to post into S3 and DynamoDB', () => post(`test-${uuid()}`, 'test'));
 });

@@ -1,20 +1,19 @@
 import AWS from 'aws-sdk';
-import { getTables } from '../table';
+import { getDocumentClients } from '../documentClients';
 
 function getMyFiles() {
   const {
-    userTable,
-  } = getTables();
+    userDocumentClient,
+  } = getDocumentClients();
 
   const param = {
     AttributesToGet: ['Files'],
     Key: {
-      UserID: {
-        S: AWS.config.credentials.identityId,
-      },
+      UserID: AWS.config.credentials.identityId,
     },
   };
-  return userTable.getItem(param)
+
+  return userDocumentClient.get(param)
   .promise()
   .then(result => (
     result.Item && result.Item.Files && result.Item.Files.L

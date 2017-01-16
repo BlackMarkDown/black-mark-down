@@ -1,4 +1,3 @@
-import AWS from 'aws-sdk';
 import getMyFiles from 'src/aws/Explorer/getMyFiles';
 import logIn from 'src/aws/IdentityManager/logIn';
 
