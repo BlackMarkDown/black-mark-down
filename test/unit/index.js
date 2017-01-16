@@ -1,8 +1,9 @@
 // Polyfill fn.bind() for PhantomJS
 /* eslint-disable no-extend-native */
 Function.prototype.bind = require('function-bind');
+import 'whatwg-fetch';
 require('es6-promise').polyfill();
-require("error-polyfill");
+
 
 // require all test files (files that ends with .spec.js)
 const testsContext = require.context('./specs', true, /\.spec$/);

@@ -1,7 +1,17 @@
 /* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
-/* global fetch window */
+
 import 'whatwg-fetch';
 import uploadImage from 'src/aws/PostManager/uploadImage';
+import imageBlob from './imageBlob';
+
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  }
+  const error = new Error(response.statusText);
+  error.response = response;
+  throw error;
+}
 
 const convertBase64ToBase64 = blob => new Promise((resolve) => {
   const reader = new window.FileReader();
@@ -10,18 +20,12 @@ const convertBase64ToBase64 = blob => new Promise((resolve) => {
 });
 
 describe('PostManager/uploadImage.js', () => {
-  let image;
-  before(() => fetch('http://placehold.it/120x120&text=image1')
-    .then(response => response.blob())
-    .then((blob) => {
-      image = blob;
-    }));
-
   it('should success to upload image into S3', () =>
-    uploadImage('test', image)
+    uploadImage('test', imageBlob)
     .then(fetch)
+    .then(checkStatus)
     .then(response => response.blob())
-    .then(blob => Promise.all([convertBase64ToBase64(image), convertBase64ToBase64(blob)]))
+    .then(blob => Promise.all([convertBase64ToBase64(imageBlob), convertBase64ToBase64(blob)]))
     .then(results => (
       results[0] === results[1]
       ? Promise.resolve()
