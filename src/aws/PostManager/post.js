@@ -10,12 +10,13 @@ function uploadFileToS3(title, content) {
   }).promise();
 }
 
-function appendNewFileOnTable(markdownFileLocation) {
+function appendNewFileOnTable(title, markdownFileLocation) {
   const {
     userDocumentClient,
   } = getDocumentClients();
   const newFile = {
-    MarkdownFileLocation: markdownFileLocation,
+    title,
+    markdownFileLocation,
   };
   const params = {
     Key: { UserID: AWS.config.credentials.identityId },
@@ -34,7 +35,7 @@ function appendNewFileOnTable(markdownFileLocation) {
 
 function post(title, content) {
   return uploadFileToS3(title, content)
-  .then(data => appendNewFileOnTable(data.Location));
+  .then(data => appendNewFileOnTable(title, data.Location));
 }
 
 export default post;

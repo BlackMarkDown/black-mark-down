@@ -16,8 +16,8 @@ function getMyFiles() {
   return userDocumentClient.get(param)
   .promise()
   .then(result => (
-    result.Item && result.Item.Files && result.Item.Files.L
-    ? result.Item.Files.L
+    result.Item && result.Item.Files
+    ? result.Item.Files
     : []));
 }
 
