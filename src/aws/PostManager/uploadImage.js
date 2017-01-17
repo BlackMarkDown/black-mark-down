@@ -1,5 +1,5 @@
 import uuid from 'uuid';
-import { getBucket } from '../bucket';
+import { uploadFileToS3 } from '../bucket';
 /**
   *
   * @return Promise with url to view uploaded image
@@ -7,13 +7,7 @@ import { getBucket } from '../bucket';
 function uploadImage(name, file) {
   const key = `${name}_${uuid()}`;
 
-  return getBucket().upload({
-    Key: key,
-    Body: file,
-    ACL: 'public-read',
-  })
-  .promise()
-  .then(data => data.Location);
+  return uploadFileToS3(key, file);
 }
 
 export default uploadImage;

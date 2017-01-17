@@ -16,3 +16,11 @@ refreshBucket();
 export function getBucket() {
   return bucket;
 }
+
+export function uploadFileToS3(key, body, ACL) {
+  return getBucket().upload({
+    Key: `${AWS.config.credentials.identityId}/${key}`,
+    Body: body,
+    ACL: ACL || 'public-read',
+  }).promise().then(data => data.Location);
+}
