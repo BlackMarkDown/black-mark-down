@@ -12,7 +12,15 @@ describe('scenario for posting test', () => {
       expect(files).to.be.a('array');
       const filteredFiles = files.filter(file => file.ID === fileID);
       expect(filteredFiles).to.have.lengthOf(count);
-      return filteredFiles[0];
+      if (count > 0) {
+        return Explorer.getFile(fileID)
+        .then((file) => {
+          expect(file).to.be.a('object');
+          expect(file).to.have.property('ID', fileID);
+          return file;
+        });
+      }
+      return Promise.resolve();
     });
   }
 
