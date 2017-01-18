@@ -2,14 +2,14 @@ import AWS from 'aws-sdk';
 import { getDocumentClients } from '../documentClients';
 import { uploadFileToS3 } from '../bucket';
 
-export default function saveWhileEditing(fileID, title, content) {
+export default function saveWhileEditing(fileID, filename, content) {
   return uploadFileToS3(`edit-${fileID}`, content)
   .then((markdownFileLocation) => {
     const {
       fileDocumentClient,
     } = getDocumentClients();
     const newEditingData = {
-      title,
+      filename,
       markdownFileLocation,
     };
     const params = {
@@ -24,5 +24,6 @@ export default function saveWhileEditing(fileID, title, content) {
     };
 
     return fileDocumentClient.update(params).promise();
+    // TODO return updated file data from table
   });
 }

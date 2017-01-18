@@ -1,15 +1,15 @@
 import { uploadFileToS3 } from '../bucket';
 import { updateFile } from '../documentClients';
 
-function post(fileID, title, content) {
+function post(fileID, filename, content) {
   return uploadFileToS3(`post-${fileID}`, content)
   .then(markdownFileLocation =>
     updateFile(fileID, {
-      ':title': title,
+      ':filename': filename,
       ':markdownFileLocation': markdownFileLocation,
       ':false': false,
       ':true': true,
-    }, 'SET title = :title, markdownFileLocation = :markdownFileLocation, isEditing = :false, isPublic = :true')
+    }, 'SET filename = :filename, markdownFileLocation = :markdownFileLocation, isEditing = :false, isPublic = :true')
   );
 }
 
