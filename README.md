@@ -1,2 +1,2 @@
-# Serverless Markdwon Publishing Platform
+# Serverless Markdown Publishing Platform
 like... medium.com + markdown!
