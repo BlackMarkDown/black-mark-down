@@ -27,9 +27,9 @@ describe('scenario for posting test', () => {
   it('should success to login',
     () => {
       const {
-        AWS_COGNITO_TEST_USERNAME: username,
-        AWS_COGNITO_TEST_PASSWORD: password,
-      } = process.env;
+        username,
+        password,
+      } = process.env.AWS_COGNITO_TEST;
       return IdentityManager.logIn(username, password);
     });
 

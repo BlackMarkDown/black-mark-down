@@ -1,7 +1,7 @@
 import AWS from 'aws-sdk';
 import { getDocumentClients } from '../documentClients';
 
-function queryMyFiles(filterExpression, expressionAttributeValues) {
+export default function queryMyFiles(filterExpression, expressionAttributeValues) {
   const {
     fileDocumentClient,
   } = getDocumentClients();
@@ -20,5 +20,3 @@ function queryMyFiles(filterExpression, expressionAttributeValues) {
   .promise()
   .then(result => (result.Items || []));
 }
-
-export default queryMyFiles;

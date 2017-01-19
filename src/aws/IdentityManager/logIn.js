@@ -4,7 +4,14 @@ import userPool from './userPool';
 import { refreshBucket } from '../bucket';
 import { refreshDocumentClients } from '../documentClients';
 
-const logIn = (username, password) => new Promise((resolve, reject) => {
+export const MFA_REQUIRED = 'MFA Required';
+export const NEW_PASSWORD_REQUIRED = 'New Password Required';
+
+
+const logIn = (username, password, {
+  mfaRequired,
+  newPasswordRequired,
+} = {}) => new Promise((resolve, reject) => {
   const authenticationData = {
     Username: username,
     Password: password,
@@ -25,13 +32,24 @@ const logIn = (username, password) => new Promise((resolve, reject) => {
           [`cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`]: result.getIdToken().getJwtToken(),
         },
       });
-
       refreshBucket();
       refreshDocumentClients();
 
       resolve(result);
     },
     onFailure: err => reject(err),
+    mfaRequired:
+      codeDeliveryDetails => (
+        mfaRequired
+        ? mfaRequired(codeDeliveryDetails, cognitoUser)
+        : reject(new Error(MFA_REQUIRED))
+      ),
+    newPasswordRequired:
+      (userAttributes, requiredAttributes) => (
+        newPasswordRequired
+        ? newPasswordRequired(userAttributes, requiredAttributes, cognitoUser)
+        : reject(new Error(NEW_PASSWORD_REQUIRED))
+      ),
   });
 });
 
