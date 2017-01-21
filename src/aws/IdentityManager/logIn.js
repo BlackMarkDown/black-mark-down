@@ -3,6 +3,7 @@ import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
 import { refreshBucket } from '../bucket';
 import { refreshDocumentClients } from '../documentClients';
+import { refreshUsername } from './getUsername';
 
 export const MFA_REQUIRED = 'MFA Required';
 export const NEW_PASSWORD_REQUIRED = 'New Password Required';
@@ -34,6 +35,7 @@ const logIn = (username, password, {
       });
       refreshBucket();
       refreshDocumentClients();
+      refreshUsername(username);
 
       resolve(result);
     },
