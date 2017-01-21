@@ -14,19 +14,22 @@ export function getPrefix(objectType) {
   return ret;
 }
 
+/**
+  * @param url
+  * url is like
+  * /abc/def/
+  * /abc/def
+  * abc/def/
+  * abc/def
+  *
+  * @param objectType
+  *
+  * @return value is like
+  * /folder-abc/objecttype-def
+  *
+  */
+
 export default function resolveURLToS3Key(url, objectType) {
-  /**
-    * URL Cases
-    *
-    * /abc/def/
-    * /abc/def
-    * abc/def/
-    * abc/def
-    *
-    * Return value is like
-    * /folder-abc/objecttype-def
-    *
-    */
   const strings = url.split('/').filter(string => string);
   return strings.reduce((accumulator, string, index) => {
     const isLastString = (index === strings.length - 1);
