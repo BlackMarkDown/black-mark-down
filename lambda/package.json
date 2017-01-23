@@ -4,11 +4,17 @@
   "description": "",
   "main": "index.js",
   "author": "nam se hyun <skatpgusskat@naver.com>",
+  "scripts": {
+    "deploy": "rm -f ./archive.zip && node deploy.js"
+  },
   "dependencies": {
     "aws-sdk": "^2.7.27",
     "aws-serverless-express": "^1.2.0",
     "body-parser": "^1.16.0",
     "cors": "^2.8.1",
     "express": "^4.14.0"
+  },
+  "devDependencies": {
+    "zip-folder": "^1.0.0"
   }
 }
