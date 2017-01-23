@@ -1,0 +1,14 @@
+{
+  "name": "blackmarkdown-lambda",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "author": "nam se hyun <skatpgusskat@naver.com>",
+  "dependencies": {
+    "aws-sdk": "^2.7.27",
+    "aws-serverless-express": "^1.2.0",
+    "body-parser": "^1.16.0",
+    "cors": "^2.8.1",
+    "express": "^4.14.0"
+  }
+}
