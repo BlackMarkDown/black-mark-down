@@ -3,6 +3,7 @@ import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
 import { refreshBucket } from '../bucket';
 import { refreshDocumentClients } from '../documentClients';
+import { updateToken } from '../authFetch';
 
 export const MFA_REQUIRED = 'MFA Required';
 export const NEW_PASSWORD_REQUIRED = 'New Password Required';
@@ -26,15 +27,16 @@ const logIn = (username, password, {
 
   cognitoUser.authenticateUser(authenticationDetails, {
     onSuccess: (result) => {
+      const token = result.getIdToken().getJwtToken();
       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
         IdentityPoolId: process.env.AWS_COGNITO_IDENTITY_POOL_ID,
         Logins: {
-          [`cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`]: result.getIdToken().getJwtToken(),
+          [`cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`]: token,
         },
       });
       refreshBucket();
       refreshDocumentClients();
-
+      updateToken(token);
       resolve(result);
     },
     onFailure: err => reject(err),
