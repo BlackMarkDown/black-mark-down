@@ -27,8 +27,8 @@ export function getSuffix(objectType) {
 }
 
 /**
-  * @param url
-  * url is like
+  * @param path
+  * path is like
   * /abc/def/ --> abc/def/{objecttype-} --> Throw Error
   * /abc/def --> abc/{objecttype-}def
   * abc/def/ --> abc/def/{objecttype-} --> Throw Error
@@ -39,11 +39,11 @@ export function getSuffix(objectType) {
   *
   */
 
-export default function resolveURLToS3Key(url, objectType) {
-  if (objectType !== ObjectType.FOLDER && url.charAt(url.length - 1) === '/') {
+export default function resolvePath(path, objectType) {
+  if (objectType !== ObjectType.FOLDER && path.charAt(path.length - 1) === '/') {
     throw new Error("Only folder can have '/' suffix");
   }
-  const strings = url.split('/').filter(string => string);
+  const strings = path.split('/').filter(string => string);
   return strings.reduce((accumulator, string, index) => {
     const isLastString = (index === strings.length - 1);
     if (isLastString) {
