@@ -5,7 +5,7 @@ import PostManager from 'src/aws/PostManager';
 
 
 describe('scenario for posting test', () => {
-  let fileURL;
+  let filePath;
   const {
     username,
     password,
@@ -18,16 +18,18 @@ describe('scenario for posting test', () => {
       PostManager.init(`${username}/`)
       .then((url) => {
         expect(url).to.be.a('string');
-        fileURL = url;
+        filePath = url;
+      })
+  );
+
+  it('should success to get file that we inited',
+    () =>
+      Explorer.getFile(filePath)
+      .then((content) => {
+        console.log(content);
       })
   );
 /*
-  it('should success to query file that we inited',
-    () =>
-      testQueryingFile(1, Explorer.queryMyEditingFiles)
-      .then(() => testQueryingFile(1))
-  );
-
   it('should success to save while editing',
     () => {
       const filename = uuid();

@@ -19,7 +19,7 @@ const convertBase64ToBase64 = blob => new Promise((resolve) => {
   reader.onloadend = () => resolve(reader.result.split(',')[1]); // remove metadata of base64
 });
 
-describe('PostManager/uploadImage.js', () => {
+describe.skip('PostManager/uploadImage.js', () => {
   it('should success to upload image into S3', () =>
     uploadImage('test', imageBlob)
     .then(fetch)
