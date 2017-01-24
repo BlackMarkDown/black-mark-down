@@ -25,9 +25,6 @@ describe('scenario for posting test', () => {
   it('should success to get file that we inited',
     () =>
       Explorer.getFile(filePath)
-      .then((content) => {
-        console.log(content);
-      })
   );
 /*
   it('should success to save while editing',

@@ -1,39 +1,54 @@
 import ObjectType from './ObjectType';
 
 const prefixes = {
-  [ObjectType.FOLDER]: 'folder-',
+  [ObjectType.FOLDER]: '',
   [ObjectType.PUBLIC_FILE]: 'public-',
   [ObjectType.DRAFT_FILE]: 'draft-',
 };
 
 export function getPrefix(objectType) {
-  const ret = prefixes[objectType];
-  if (!ret) {
-    throw new Error(`wrong object type : ${objectType}`);
+  if (Object.hasOwnProperty.call(prefixes, objectType)) {
+    return prefixes[objectType];
   }
-  return ret;
+  throw new Error(`wrong object type : ${objectType}`);
+}
+
+const suffixes = {
+  [ObjectType.FOLDER]: '/',
+  [ObjectType.PUBLIC_FILE]: '',
+  [ObjectType.DRAFT_FILE]: '',
+};
+
+export function getSuffix(objectType) {
+  if (Object.hasOwnProperty.call(suffixes, objectType)) {
+    return suffixes[objectType];
+  }
+  throw new Error(`wrong object type : ${objectType}`);
 }
 
 /**
   * @param url
   * url is like
-  * /abc/def/
-  * /abc/def
-  * abc/def/
-  * abc/def
+  * /abc/def/ --> abc/def/{objecttype-} --> Throw Error
+  * /abc/def --> abc/{objecttype-}def
+  * abc/def/ --> abc/def/{objecttype-} --> Throw Error
+  * abc/def --> abc/{objecttype-}def
   *
   * @param objectType
   *
-  * @return value is like
-  * /folder-abc/objecttype-def
   *
   */
 
 export default function resolveURLToS3Key(url, objectType) {
+  if (objectType !== ObjectType.FOLDER && url.charAt(url.length - 1) === '/') {
+    throw new Error("Only folder can have '/' suffix");
+  }
   const strings = url.split('/').filter(string => string);
   return strings.reduce((accumulator, string, index) => {
     const isLastString = (index === strings.length - 1);
-    const prefix = isLastString ? getPrefix(objectType) : getPrefix(ObjectType.FOLDER);
-    return `${accumulator}/${prefix}${string}`;
+    if (isLastString) {
+      return `${accumulator}${getPrefix(objectType)}${string}${getSuffix(objectType)}`;
+    }
+    return `${accumulator}${string}/`;
   }, '');
 }

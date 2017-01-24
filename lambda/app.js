@@ -76,7 +76,7 @@ app.put('*', (req, res) => {
 
   return bucket.putObject({
     Key: key,
-    Body: isBodyEmpty ? '' : req.body,
+    Body: isBodyEmpty ? null : req.body,
   })
   .promise()
   .then(() => res.sendStatus(200))
