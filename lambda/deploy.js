@@ -1,7 +1,8 @@
 var zipFolder = require('zip-folder');
 var path = require('path');
 
-var src = __dirname + '/.';
+var isWin = /^win/.test(process.platform);
+var src = isWin ? __dirname : __dirname + '/.';
 var dest = path.join(__dirname, './archive.zip');
 console.log(src);
 zipFolder(src, dest, function (err) {

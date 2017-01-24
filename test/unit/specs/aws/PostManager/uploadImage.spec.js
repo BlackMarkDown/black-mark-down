@@ -1,17 +1,8 @@
-/* eslint import/no-extraneous-dependencies: ["error", {"devDependencies": true}] */
-
-import 'whatwg-fetch';
-import uploadImage from 'src/aws/PostManager/uploadImage';
+import uuid from 'uuid';
+import PostManager from 'src/aws/PostManager';
+import Explorer from 'src/aws/Explorer';
+import IdentityManager from 'src/aws/IdentityManager';
 import imageBlob from './imageBlob';
-
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  }
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
-}
 
 const convertBase64ToBase64 = blob => new Promise((resolve) => {
   const reader = new window.FileReader();
@@ -19,12 +10,10 @@ const convertBase64ToBase64 = blob => new Promise((resolve) => {
   reader.onloadend = () => resolve(reader.result.split(',')[1]); // remove metadata of base64
 });
 
-describe.skip('PostManager/uploadImage.js', () => {
+describe('PostManager/uploadImage.js', () => {
   it('should success to upload image into S3', () =>
-    uploadImage('test', imageBlob)
-    .then(fetch)
-    .then(checkStatus)
-    .then(response => response.blob())
+    PostManager.uploadImage(`${IdentityManager.getUsername()}/testImage-${uuid()}.png`, imageBlob)
+    .then(path => Explorer.getFile(path, Explorer.ObjectType.IMAGE_FILE))
     .then(blob => Promise.all([convertBase64ToBase64(imageBlob), convertBase64ToBase64(blob)]))
     .then(results => (
       results[0] === results[1]

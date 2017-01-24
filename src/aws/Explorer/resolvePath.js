@@ -4,6 +4,7 @@ const prefixes = {
   [ObjectType.FOLDER]: '',
   [ObjectType.PUBLIC_FILE]: 'public-',
   [ObjectType.DRAFT_FILE]: 'draft-',
+  [ObjectType.IMAGE_FILE]: 'image/',
 };
 
 export function getPrefix(objectType) {
@@ -17,6 +18,7 @@ const suffixes = {
   [ObjectType.FOLDER]: '/',
   [ObjectType.PUBLIC_FILE]: '',
   [ObjectType.DRAFT_FILE]: '',
+  [ObjectType.IMAGE_FILE]: '',
 };
 
 export function getSuffix(objectType) {

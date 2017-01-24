@@ -83,6 +83,7 @@ app.put('*', (req, res) => {
   }
 
   console.log(req.body);
+  console.log(req.headers);
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object
       && Object.keys(req.body).length === 0);

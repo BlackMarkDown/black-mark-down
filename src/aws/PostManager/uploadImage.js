@@ -1,13 +1,8 @@
-import uuid from 'uuid';
-import { uploadFileToS3 } from '../bucket';
+import ObjectType from '../Explorer/ObjectType';
+import createObjectIfNotExists from '../Explorer/createObjectIfNotExists';
 /**
-  *
-  * @return Promise with url to view uploaded image
+  * @return Promise that return file path
   */
-function uploadImage(name, file) {
-  const key = `${name}_${uuid()}`;
-
-  return uploadFileToS3(key, file);
+export default function uploadImage(filename, file) {
+  return createObjectIfNotExists(filename, ObjectType.IMAGE_FILE, file);
 }
-
-export default uploadImage;

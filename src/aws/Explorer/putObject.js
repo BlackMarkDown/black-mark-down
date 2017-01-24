@@ -6,6 +6,7 @@ import authFetch, { is2XX } from '../authFetch';
   */
 export default function putObject(path, objectType, content) {
   const url = resolvePath(path, objectType);
+  console.log(url);
   return authFetch(url, {
     method: 'PUT',
     body: content,
