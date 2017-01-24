@@ -26,23 +26,19 @@ describe('scenario for posting test', () => {
     () =>
       Explorer.getFile(filePath, Explorer.ObjectType.DRAFT_FILE)
   );
-/*
-  it('should success to save while editing',
+
+  it('should success to save content while editing',
     () => {
-      const filename = uuid();
       const content = uuid();
-      return PostManager.saveWhileEditing(fileID, filename, content)
-      .then(() => testQueryingFile(1, Explorer.queryMyEditingFiles))
-      .then((file) => {
-        expect(file).to.have.property('editingData');
-        expect(file).to.have.deep.property('editingData.filename');
-        expect(file).to.have.deep.property('editingData.markdownFileLocation');
-      })
-      .then(() => testQueryingFile(1));
+      return PostManager.saveWhileEditing(filePath, content)
+      .then(() => Explorer.getFile(filePath, Explorer.ObjectType.DRAFT_FILE))
+      .then((uploadedContent) => {
+        expect(uploadedContent).to.equal(content);
+      });
       // TODO: test s3 content is the same
     }
   );
-
+/*
   it('should success to post',
     () => {
       const filename = uuid();

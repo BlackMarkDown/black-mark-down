@@ -1,4 +1,3 @@
-import urlJoin from 'url-join';
 import authFetch, { is2XX } from '../authFetch';
 import resolvePath from './resolvePath';
 

@@ -18,6 +18,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.raw());
+app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
@@ -70,6 +71,7 @@ app.get('*', (req, res) => {
 
 app.put('*', (req, res) => {
   const key = getKeyFromPath(req.path);
+  console.log(req.body);
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object
       && Object.keys(req.body).length === 0);
