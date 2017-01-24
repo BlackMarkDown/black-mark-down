@@ -88,4 +88,18 @@ app.put('*', (req, res) => {
   });
 });
 
+app.delete('*', (req, res) => {
+  const key = getKeyFromPath(req.path);
+
+  return bucket.deleteObject({
+    Key: key,
+  })
+  .promise()
+  .then(() => res.sendStatus(200))
+  .catch((err) => {
+    console.log(err);
+    res.sendStatus(err.statusCode || 403);
+  });
+});
+
 module.exports = app;

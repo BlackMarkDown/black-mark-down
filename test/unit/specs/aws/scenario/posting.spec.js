@@ -6,6 +6,7 @@ import PostManager from 'src/aws/PostManager';
 
 describe('scenario for posting test', () => {
   let filePath;
+  let content;
   const {
     username,
     password,
@@ -29,13 +30,28 @@ describe('scenario for posting test', () => {
 
   it('should success to save content while editing',
     () => {
-      const content = uuid();
+      content = uuid();
       return PostManager.saveWhileEditing(filePath, content)
       .then(() => Explorer.getFile(filePath, Explorer.ObjectType.DRAFT_FILE))
       .then((uploadedContent) => {
         expect(uploadedContent).to.equal(content);
       });
-      // TODO: test s3 content is the same
+    }
+  );
+
+  it('should success to change filename while editing',
+    () => {
+      const newFileName = uuid();
+      const lastDelimiterIndex = filePath.lastIndexOf('/');
+      const newFilePath = `${filePath.slice(0, lastDelimiterIndex + 1)}${newFileName}`;
+      return PostManager.saveWhileEditing(filePath, content, newFilePath)
+      .then(() => {
+        filePath = newFilePath;
+        return Explorer.getFile(filePath, Explorer.ObjectType.DRAFT_FILE);
+      })
+      .then((uploadedContent) => {
+        expect(uploadedContent).to.equal(content);
+      });
     }
   );
 /*
