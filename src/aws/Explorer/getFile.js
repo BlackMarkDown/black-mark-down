@@ -1,21 +1,14 @@
-import AWS from 'aws-sdk';
-import { getDocumentClients } from '../documentClients';
+import authFetch, { is2XX } from '../authFetch';
 
-function getFile(fileID) {
-  const {
-    fileDocumentClient,
-  } = getDocumentClients();
-
-  const params = {
-    Key: {
-      userID: AWS.config.credentials.identityId,
-      ID: fileID,
-    },
-  };
-
-  return fileDocumentClient.get(params)
-  .promise()
-  .then(result => result.Item);
+function getFile(url) {
+  // TODO use S3 getObject for public files.
+  return authFetch(url)
+  .then((response) => {
+    if (!is2XX(response)) {
+      return response.text();
+    }
+    throw new Error(response.statusText);
+  });
 }
 
 export default getFile;

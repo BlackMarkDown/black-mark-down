@@ -17,26 +17,46 @@ const bucket = new AWS.S3({
 const app = express();
 
 app.use(cors());
+app.use(bodyParser.raw());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
+
+function getKeyFromPath(path) {
+  return path.charAt(0) === '/' ? path.substr(1) : path;
+}
+
 app.use((req, res, next) => {
   try {
     /* eslint no-param-reassign: ["error", { "props": false }] */
     req.username = req.apiGateway.event.requestContext.authorizer.claims['cognito:username'];
-    next();
+    const path = req.path;
+    const pathParts = path.split('/').splice(1); // remove first '/' by splicing
+    if (pathParts[0] !== req.username) {
+      return res.sendStatus(401);
+    }
+    console.log(req.method, path, getKeyFromPath(path));
+    return next();
   } catch (err) {
-    res.end(401);
+    return res.sendStatus(401);
   }
 });
 
+app.head('*', (req, res) => {
+  const key = getKeyFromPath(req.path);
+  return bucket.headObject({
+    Key: key,
+  })
+  .promise()
+  .then(() => res.sendStatus(200))
+  .catch((err) => {
+    console.log(err);
+    res.sendStatus(err.statusCode || 403);
+  });
+});
+
 app.get('*', (req, res) => {
-  const path = req.path;
-  const pathParts = path.split('/').splice(1);
-  if (pathParts[0] !== req.username) {
-    return res.sendStatus(401);
-  }
-  const key = req.path.charAt(0) === '/' ? req.path.substr(1) : req.path;
+  const key = getKeyFromPath(req.path);
   return bucket.getObject({
     Key: key,
   })
@@ -44,7 +64,25 @@ app.get('*', (req, res) => {
   .then(data => res.send(data.Body))
   .catch((err) => {
     console.log(err);
-    res.sendStatus(404);
+    res.sendStatus(err.statusCode || 403);
+  });
+});
+
+app.put('*', (req, res) => {
+  const key = getKeyFromPath(req.path);
+  const isBodyEmpty = (!req.body)
+    || (req.body.constructor === Object
+      && Object.keys(req.body).length === 0);
+
+  return bucket.putObject({
+    Key: key,
+    Body: isBodyEmpty ? '' : req.body,
+  })
+  .promise()
+  .then(() => res.sendStatus(200))
+  .catch((err) => {
+    console.log(err);
+    res.sendStatus(err.statusCode || 403);
   });
 });
 
