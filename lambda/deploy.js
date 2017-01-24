@@ -1,8 +1,10 @@
 var zipFolder = require('zip-folder');
 var path = require('path');
 
+var src = __dirname + '/.';
 var dest = path.join(__dirname, './archive.zip');
-zipFolder(__dirname, dest, function (err) {
+console.log(src);
+zipFolder(src, dest, function (err) {
   if (err) {
     console.log('Error on zipping', err);
     return;
