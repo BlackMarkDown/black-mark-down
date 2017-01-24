@@ -47,8 +47,8 @@ export default function resolvePath(path, objectType) {
   return strings.reduce((accumulator, string, index) => {
     const isLastString = (index === strings.length - 1);
     if (isLastString) {
-      return `${accumulator}${getPrefix(objectType)}${string}${getSuffix(objectType)}`;
+      return `${accumulator}/${getPrefix(objectType)}${string}${getSuffix(objectType)}`;
     }
-    return `${accumulator}${string}/`;
-  }, '');
+    return `${accumulator}/${string}`;
+  }, process.env.AMAZON_API_GATEWAY_URL);
 }

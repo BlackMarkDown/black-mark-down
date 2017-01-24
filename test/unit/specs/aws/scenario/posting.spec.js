@@ -24,7 +24,7 @@ describe('scenario for posting test', () => {
 
   it('should success to get file that we inited',
     () =>
-      Explorer.getFile(filePath)
+      Explorer.getFile(filePath, Explorer.ObjectType.DRAFT_FILE)
   );
 /*
   it('should success to save while editing',
