@@ -4,6 +4,7 @@ import userPool from './userPool';
 import { refreshBucket } from '../bucket';
 import { refreshDocumentClients } from '../documentClients';
 import { updateToken } from '../authFetch';
+import { updateUsername } from './getUsername';
 
 export const MFA_REQUIRED = 'MFA Required';
 export const NEW_PASSWORD_REQUIRED = 'New Password Required';
@@ -37,6 +38,7 @@ const logIn = (username, password, {
       refreshBucket();
       refreshDocumentClients();
       updateToken(token);
+      updateUsername(username);
       resolve(result);
     },
     onFailure: err => reject(err),
