@@ -1,16 +1,8 @@
-import { uploadFileToS3 } from '../bucket';
-import { updateFile } from '../documentClients';
+import putObject from '../Explorer/putObject';
+import ObjectType from '../Explorer/ObjectType';
 
-function post(fileID, filename, content) {
-  return uploadFileToS3(`post-${fileID}`, content)
-  .then(markdownFileLocation =>
-    updateFile(fileID, {
-      ':filename': filename,
-      ':markdownFileLocation': markdownFileLocation,
-      ':false': false,
-      ':true': true,
-    }, 'SET filename = :filename, markdownFileLocation = :markdownFileLocation, isEditing = :false, isPublic = :true')
-  );
+function post(filePath, content) {
+  return putObject(filePath, ObjectType.PUBLIC_FILE, content);
 }
 
 export default post;

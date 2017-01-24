@@ -71,6 +71,16 @@ app.get('*', (req, res) => {
 
 app.put('*', (req, res) => {
   const key = getKeyFromPath(req.path);
+  const pathParts = req.path.split('/').splice(1); // remove first '/' by splicing
+  const filename = pathParts[pathParts.length - 1];
+
+  let acl;
+  if (filename.indexOf('draft-') === 0) {
+    acl = 'private';
+  } else {
+    acl = 'public-read';
+  }
+
   console.log(req.body);
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object
@@ -79,6 +89,7 @@ app.put('*', (req, res) => {
   return bucket.putObject({
     Key: key,
     Body: isBodyEmpty ? null : req.body,
+    ACL: acl,
   })
   .promise()
   .then(() => res.sendStatus(200))

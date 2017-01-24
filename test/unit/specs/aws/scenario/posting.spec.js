@@ -54,20 +54,13 @@ describe('scenario for posting test', () => {
       });
     }
   );
-/*
+
   it('should success to post',
-    () => {
-      const filename = uuid();
-      const content = uuid();
-      return PostManager.post(fileID, filename, content)
-      .then(() => testQueryingFile(1))
-      .then(() => testQueryingFile(0, Explorer.queryMyEditingFiles))
-      .then(() => testQueryingFile(1, Explorer.queryMyPostedFiles))
-      .then((file) => {
-        expect(file).to.have.property('filename', filename);
-      });
-      // TODO: test s3 content is the same
-    }
+    () =>
+      PostManager.post(filePath, content)
+      .then(() => Explorer.getFile(filePath, Explorer.ObjectType.PUBLIC_FILE))
+      .then((publicContent) => {
+        expect(publicContent).to.equal(content);
+      })
   );
-  */
 });
