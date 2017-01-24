@@ -43,7 +43,7 @@ export default function resolvePath(path, objectType) {
   if (objectType !== ObjectType.FOLDER && path.charAt(path.length - 1) === '/') {
     throw new Error("Only folder can have '/' suffix");
   }
-  const strings = path.split('/').filter(string => string);
+  const strings = path.split('/').filter(string => string).map(string => encodeURIComponent(string));
   return strings.reduce((accumulator, string, index) => {
     const isLastString = (index === strings.length - 1);
     if (isLastString) {

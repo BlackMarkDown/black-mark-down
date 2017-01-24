@@ -24,7 +24,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
 
 function getKeyFromPath(path) {
-  return path.charAt(0) === '/' ? path.substr(1) : path;
+  const key = path.charAt(0) === '/' ? path.substr(1) : path;
+  return decodeURIComponent(key);
 }
 
 app.use((req, res, next) => {

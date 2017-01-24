@@ -9,10 +9,11 @@ zipFolder(src, dest, function (err) {
     console.log('Error on zipping', err);
     return;
   }
+  console.log('zip success');
   var fs = require('fs');
 
   var zip = fs.readFileSync(dest);
-
+  console.log('load zip file success');
   var params = {
     FunctionName: 'test',
     Publish: true,
@@ -22,7 +23,6 @@ zipFolder(src, dest, function (err) {
   var AWS = require('aws-sdk');
   var lambda = new AWS.Lambda({
     region: 'ap-northeast-2',
-
   });
   lambda.updateFunctionCode(params, function(err, data) {
     if (err) console.log(err, err.stack); // an error occurred

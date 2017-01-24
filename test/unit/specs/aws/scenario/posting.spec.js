@@ -41,7 +41,7 @@ describe('scenario for posting test', () => {
 
   it('should success to change filename while editing',
     () => {
-      const newFileName = uuid();
+      const newFileName = `테스트-${uuid()}.txt`;
       const lastDelimiterIndex = filePath.lastIndexOf('/');
       const newFilePath = `${filePath.slice(0, lastDelimiterIndex + 1)}${newFileName}`;
       return PostManager.saveWhileEditing(filePath, content, newFilePath)
