@@ -32,5 +32,6 @@ module.exports = {
     window: false,
     fetch: false,
     atob: false,
+    File: false,
   }
 }

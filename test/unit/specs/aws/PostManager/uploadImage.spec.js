@@ -2,7 +2,7 @@ import uuid from 'uuid';
 import PostManager from 'src/aws/PostManager';
 import Explorer from 'src/aws/Explorer';
 import IdentityManager from 'src/aws/IdentityManager';
-import imageBlob from './imageBlob';
+import imageFile from './imageFile';
 
 const convertBase64ToBase64 = blob => new Promise((resolve) => {
   const reader = new window.FileReader();
@@ -10,14 +10,23 @@ const convertBase64ToBase64 = blob => new Promise((resolve) => {
   reader.onloadend = () => resolve(reader.result.split(',')[1]); // remove metadata of base64
 });
 
-describe('PostManager/uploadImage.js', () => {
+describe.only('PostManager/uploadImage.js', () => {
+  before(() => {
+    const {
+      username,
+      password,
+    } = process.env.AWS_COGNITO_TEST;
+    return IdentityManager.logIn(username, password);
+  });
+
   it('should success to upload image into S3', () =>
-    PostManager.uploadImage(`${IdentityManager.getUsername()}/testImage-${uuid()}.png`, imageBlob)
+    PostManager.uploadImage(`${IdentityManager.getUsername()}/testImage-${uuid()}.png`, imageFile)
     .then(path => Explorer.getFile(path, Explorer.ObjectType.IMAGE_FILE))
-    .then(blob => Promise.all([convertBase64ToBase64(imageBlob), convertBase64ToBase64(blob)]))
-    .then(results => (
+    .then(file => console.log(file))
+    /* .then(blob => Promise.all([convertBase64ToBase64(imageBlob), convertBase64ToBase64(blob)]))
+    .then(results => {console.log(results); return (
       results[0] === results[1]
       ? Promise.resolve()
-      : Promise.reject('uploaded image is not the same with what you uploaded.')))
+      : Promise.reject('uploaded image is not the same with what you uploaded.'))}) */
   );
 });

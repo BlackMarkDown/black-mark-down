@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // TODO remove this later
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 const AWS = require('aws-sdk');
+const contentTypeParser = require('content-type').parse;
 
 AWS.config.region = process.env.AWS_REGION;
 
@@ -17,7 +18,35 @@ const bucket = new AWS.S3({
 const app = express();
 
 app.use(cors());
-app.use(bodyParser.raw());
+app.use((req, res, next) => {
+  try {
+    console.log(req.headers);
+    const contentType = contentTypeParser(req.headers['content-type']);
+    console.log(contentType);
+    if (contentType.type !== 'application/octet-stream') {
+      next();
+      return;
+    }
+    const data = [];
+    req.on('data', (chunk) => {
+      console.log('data');
+      console.log(chunk);
+      data.push(chunk);
+    });
+    req.on('end', () => {
+      console.log('end');
+      console.log(data);
+      console.log(JSON.stringify(data));
+      console.log(data.length);
+      req.body = new Buffer(data.toString(), 'base64');
+      console.log(req.body);
+      next();
+    });
+  } catch (err) {
+    console.log(err);
+    next();
+  }
+});
 app.use(bodyParser.text());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -81,8 +110,28 @@ app.put('*', (req, res) => {
   } else {
     acl = 'public-read';
   }
+/*
+
+for(var i = 0; i < a.toString().length; i++) {
+  console.log(a.toString().charCodeAt(i));
+}
+
+for(var i = 0; i < Math.max(a.toString().length, b.toString().length); i++) {
+  if (i >= b.toString().length) {
+    console.log(i, a.toString().charCodeAt(i));
+  }
+  else if (a.toString().charCodeAt(i) !== b.toString().charCodeAt(i)) {
+    console.log(i, '!!', a.toString().charCodeAt(i), b.toString().charCodeAt(i))
+  } else {
+    console.log(i, a.toString().charCodeAt(i));
+  }
+}*/
 
   console.log(req.body);
+  console.log(JSON.stringify(req.body));
+  console.log(req.body.length);
+  console.log(req.body.toString());
+  console.log(req.body.toString('base64'));
   console.log(req.headers);
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object

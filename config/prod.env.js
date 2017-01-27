@@ -5,6 +5,6 @@ module.exports = {
   AMAZON_S3_BUCKET_NAME: `"blackmarkdown"`,
   AWS_COGNITO_IDENTITY_POOL_ID: '"ap-northeast-2:a5510860-c803-416e-b543-280f5f7bb017"',
   AWS_REGION: '"ap-northeast-2"',
-  AMAZON_API_GATEWAY_URL: '"https://vlaozqxqr3.execute-api.ap-northeast-2.amazonaws.com/prod"',
+  AMAZON_API_GATEWAY_URL: '"https://20x399331m.execute-api.ap-northeast-2.amazonaws.com/prod"',
   AMAZON_S3_DEPLOY_BUCKET_NAME: '"blackmarkdown-deploy"',
 };

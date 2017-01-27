@@ -11,5 +11,9 @@ for (let i = 0; i < decodedString.length; i += 1) {
 const byteArray = new Uint8Array(decodedAsciiNumber);
 
 const blob = new Blob([byteArray], { type: contentType });
+const file = new File([blob], 'test.png', {
+  type: contentType,
+  lastModified: Date.now(),
+});
 
-export default blob;
+export default file;
