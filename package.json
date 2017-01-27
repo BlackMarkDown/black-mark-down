@@ -11,8 +11,7 @@
     "e2e": "node test/e2e/runner.js",
     "test": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs",
-    "resolveNewPasswordRequired": "node ./node_modules/babel-cli/bin/babel-node.js util/resolveNewPasswordRequired",
-    "deploy": "rm -f ./archive.zip && node deployLambda.js"
+    "resolveNewPasswordRequired": "node ./node_modules/babel-cli/bin/babel-node.js util/resolveNewPasswordRequired"
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^1.11.0",
