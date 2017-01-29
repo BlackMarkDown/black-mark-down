@@ -1,6 +1,6 @@
 import ObjectType from './ObjectType';
 
-const prefixes = {
+export const prefixes = {
   [ObjectType.FOLDER]: '',
   [ObjectType.PUBLIC_FILE]: 'public-',
   [ObjectType.DRAFT_FILE]: 'draft-',
@@ -14,7 +14,7 @@ export function getPrefix(objectType) {
   throw new Error(`wrong object type : ${objectType}`);
 }
 
-const suffixes = {
+export const suffixes = {
   [ObjectType.FOLDER]: '/',
   [ObjectType.PUBLIC_FILE]: '',
   [ObjectType.DRAFT_FILE]: '',
@@ -49,8 +49,8 @@ export default function resolvePath(path, objectType) {
   return strings.reduce((accumulator, string, index) => {
     const isLastString = (index === strings.length - 1);
     if (isLastString) {
-      return `${accumulator}/${getPrefix(objectType)}${string}${getSuffix(objectType)}`;
+      return `${accumulator}${getPrefix(objectType)}${string}${getSuffix(objectType)}`;
     }
-    return `${accumulator}/${string}`;
-  });
+    return `${accumulator}${string}/`;
+  }, '');
 }
