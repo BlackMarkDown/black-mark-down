@@ -100,4 +100,5 @@ definitions:
     type: object
     title: Empty Schema
 x-amazon-apigateway-binary-media-types:
-- "application/octet-stream"
+- application/octet-stream
+- image/png

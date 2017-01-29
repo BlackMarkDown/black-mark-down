@@ -9,7 +9,8 @@ export function is2XX(response) {
 }
 
 export default function authFetch(url, options) {
-  return fetch(url, {
+  const fullURL = `${process.env.AMAZON_API_GATEWAY_URL}/${url}`;
+  return fetch(fullURL, {
     ...options,
     headers: {
       ...(options ? options.headers : {}),

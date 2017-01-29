@@ -52,5 +52,5 @@ export default function resolvePath(path, objectType) {
       return `${accumulator}/${getPrefix(objectType)}${string}${getSuffix(objectType)}`;
     }
     return `${accumulator}/${string}`;
-  }, process.env.AMAZON_API_GATEWAY_URL);
+  });
 }

@@ -18,14 +18,14 @@ describe('Explorer/resolvePath.js', () => {
     ];
     objectTypes.forEach((objectType) => {
       urls.forEach((url) => {
-        const expectedS3Key = `${process.env.AMAZON_API_GATEWAY_URL}/abc/${getPrefix(objectType)}def${getSuffix(objectType)}`;
+        const expectedS3Key = `abc/${getPrefix(objectType)}def${getSuffix(objectType)}`;
         expect(resolvePath(url, objectType)).to.equal(expectedS3Key);
       });
       folderUrls.forEach((url) => {
         if (objectType !== Explorer.ObjectType.FOLDER) {
           return expect(resolvePath.bind(null, url, objectType)).to.throw(Error);
         }
-        const expectedS3Key = `${process.env.AMAZON_API_GATEWAY_URL}/abc/${getPrefix(objectType)}def${getSuffix(objectType)}`;
+        const expectedS3Key = `abc/${getPrefix(objectType)}def${getSuffix(objectType)}`;
         return expect(resolvePath(url, objectType)).to.equal(expectedS3Key);
       });
     });

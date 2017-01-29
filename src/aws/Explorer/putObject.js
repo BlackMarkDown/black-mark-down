@@ -14,7 +14,6 @@ const contentType = {
   * @return Promise that return path
   */
 export default function putObject(path, objectType, content) {
-  console.log(contentType[objectType]);
   const url = resolvePath(path, objectType);
   return authFetch(url, {
     method: 'PUT',

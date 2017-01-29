@@ -98,12 +98,15 @@ app.put('*', (req, res) => {
 
   const key = req.S3Key;
 
-  let acl;
+  const acl = 'public-read';
+  // set acl later.
+/*  let acl;
   if (isDraftFile(req)) {
     acl = 'private';
   } else {
     acl = 'public-read';
   }
+  */
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object
       && Object.keys(req.body).length === 0);

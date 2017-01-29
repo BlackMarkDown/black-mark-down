@@ -1,7 +1,6 @@
 import AWS from 'aws-sdk';
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
-import { refreshBucket } from '../bucket';
 import { refreshDocumentClients } from '../documentClients';
 import { updateToken } from '../authFetch';
 import { updateUsername } from './getUsername';
@@ -35,7 +34,6 @@ const logIn = (username, password, {
           [`cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`]: token,
         },
       });
-      refreshBucket();
       refreshDocumentClients();
       updateToken(token);
       updateUsername(username);

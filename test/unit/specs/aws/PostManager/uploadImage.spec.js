@@ -10,7 +10,7 @@ const convertBase64ToBase64 = blob => new Promise((resolve) => {
   reader.onloadend = () => resolve(reader.result.split(',')[1]); // remove metadata of base64
 });
 
-describe.only('PostManager/uploadImage.js', () => {
+describe('PostManager/uploadImage.js', () => {
   before(() => {
     const {
       username,
@@ -22,11 +22,10 @@ describe.only('PostManager/uploadImage.js', () => {
   it('should success to upload image into S3', () =>
     PostManager.uploadImage(`${IdentityManager.getUsername()}/testImage-${uuid()}.png`, imageFile)
     .then(path => Explorer.getFile(path, Explorer.ObjectType.IMAGE_FILE))
-    .then(file => console.log(file))
-    /* .then(blob => Promise.all([convertBase64ToBase64(imageBlob), convertBase64ToBase64(blob)]))
-    .then(results => {console.log(results); return (
+    .then(blob => Promise.all([convertBase64ToBase64(imageFile), convertBase64ToBase64(blob)]))
+    .then(results => (
       results[0] === results[1]
       ? Promise.resolve()
-      : Promise.reject('uploaded image is not the same with what you uploaded.'))}) */
+      : Promise.reject('uploaded image is not the same with what you uploaded.')))
   );
 });
