@@ -15,8 +15,6 @@ paths:
           description: 200 response
           schema:
             $ref: "#/definitions/Empty"
-      security:
-      - blackmarkdown-test: []
       x-amazon-apigateway-integration:
         responses:
           default:
@@ -64,8 +62,6 @@ paths:
         required: true
         type: string
       responses: {}
-      security:
-      - blackmarkdown-test: []
       x-amazon-apigateway-integration:
         uri: arn:aws:apigateway:ap-northeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-2:304616328860:function:blackmarkdown/invocations
         httpMethod: POST
@@ -103,15 +99,5 @@ definitions:
   Empty:
     type: object
     title: Empty Schema
-securityDefinitions:
-  blackmarkdown-test:
-    type: "apiKey"
-    name: "Authorization"
-    in: "header"
-    x-amazon-apigateway-authtype: "cognito_user_pools"
-    x-amazon-apigateway-authorizer:
-      providerARNs:
-      - "arn:aws:cognito-idp:ap-northeast-2:304616328860:userpool/ap-northeast-2_wgqX4kPN4"
-      type: "cognito_user_pools"
 x-amazon-apigateway-binary-media-types:
 - "application/octet-stream"

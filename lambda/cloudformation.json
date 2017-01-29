@@ -126,7 +126,8 @@
                 },
                 "Environment": {
                     "Variables" : {
-                        "AMAZON_S3_BUCKET_NAME": "blackmarkdown"
+                        "AMAZON_S3_BUCKET_NAME": "blackmarkdown",
+                        "AWS_COGNITO_USER_POOL_ID": "ap-northeast-2_wgqX4kPN4"
                     }
                 },
                 "FunctionName": "blackmarkdown",
