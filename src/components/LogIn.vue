@@ -24,7 +24,7 @@ export default {
       IdentityManager.logIn(this.username, this.password)
       .then(() => {
         const username = IdentityManager.getUsername();
-        Router.push(`/${username}/`);
+        Router.push(`/docs/${username}/`);
       })
       .catch(err => alert(err));
     },

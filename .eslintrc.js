@@ -34,5 +34,6 @@ module.exports = {
     atob: false,
     File: false,
     alert: false,
+    localStorage: false,
   }
 }
