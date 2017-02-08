@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const cors = require('cors'); // TODO remove this later
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware');
 const AWS = require('aws-sdk');
+const morgan = require('morgan');
 const bodyParserBase64 = require('./bodyParserBase64');
 const cognitoAuthorizationMiddleware = require('./cognitoAuthorizationMiddleware');
 
@@ -19,18 +20,14 @@ const bucket = new AWS.S3({
 const app = express();
 
 const getS3KeyFromPath = () => (req, res, next) => {
-  try {
-    const path = req.path;
-    const key = path.charAt(0) === '/' ? path.substr(1) : path;
-    /* eslint no-param-reassign: "off" */
-    req.S3Key = decodeURIComponent(key);
-    next();
-  } catch (err) {
-    console.log(err);
-    next();
-  }
+  const path = req.path;
+  const key = path.charAt(0) === '/' ? path.substr(1) : path;
+  /* eslint no-param-reassign: "off" */
+  req.S3Key = decodeURIComponent(key);
+  next();
 };
 
+app.use(morgan('tiny'));
 app.use(cors());
 app.use(bodyParserBase64());
 app.use(bodyParser.text());
@@ -39,6 +36,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(awsServerlessExpressMiddleware.eventContext());
 app.use(cognitoAuthorizationMiddleware());
 app.use(getS3KeyFromPath());
+app.use((req, res, next) => {
+  console.log('after middleware');
+  next();
+});
 
 function getPathParts(req) {
   // remove first '/' by splicing
@@ -63,13 +64,15 @@ function isOwner(req) {
 
 app.head('*', (req, res) => {
   const key = req.S3Key;
+  console.log(key);
   return bucket.headObject({
     Key: key,
   })
   .promise()
-  .then(() => res.sendStatus(200))
+  .then(() => {
+    res.sendStatus(200);
+  })
   .catch((err) => {
-    console.log(err);
     res.sendStatus(err.statusCode || 403);
   });
 });
@@ -97,16 +100,8 @@ app.put('*', (req, res) => {
   }
 
   const key = req.S3Key;
-
   const acl = 'public-read';
-  // set acl later.
-/*  let acl;
-  if (isDraftFile(req)) {
-    acl = 'private';
-  } else {
-    acl = 'public-read';
-  }
-  */
+
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object
       && Object.keys(req.body).length === 0);
@@ -138,6 +133,11 @@ app.delete('*', (req, res) => {
     console.log(err);
     res.sendStatus(err.statusCode || 403);
   });
+});
+
+app.use((err, req, res, next) => {
+  console.log(err, err.stack);
+  next();
 });
 
 module.exports = app;
