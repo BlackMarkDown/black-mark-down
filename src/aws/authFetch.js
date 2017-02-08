@@ -1,6 +1,9 @@
-let token;
+const TOKEN_LOCAL_STORAGE_KEY = 'authToken';
+
+let token = localStorage.getItem(TOKEN_LOCAL_STORAGE_KEY);
 
 export function updateToken(newToken) {
+  localStorage.setItem(TOKEN_LOCAL_STORAGE_KEY, newToken);
   token = newToken;
 }
 
