@@ -55,7 +55,6 @@ function isDraftFile(req) {
 
 function isOwner(req) {
   const pathParts = getPathParts(req);
-  console.log(JSON.stringify(pathParts));
   const username = pathParts[0];
   console.log(username, req.username);
 
@@ -79,9 +78,11 @@ app.head('*', (req, res) => {
 
 app.get('*', (req, res) => {
   if (isDraftFile(req) && !isOwner(req)) {
+    console.log("it's draft file but this user isn't owner");
     return res.sendStatus(401);
   }
   const key = req.S3Key;
+  console.log(key);
   return bucket.getObject({
     Key: key,
   })
@@ -100,7 +101,7 @@ app.put('*', (req, res) => {
   }
 
   const key = req.S3Key;
-  const acl = 'public-read';
+  const acl = 'public-read'; // TODO make private on draft files
 
   const isBodyEmpty = (!req.body)
     || (req.body.constructor === Object

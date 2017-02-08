@@ -25,25 +25,27 @@ module.exports = () => (req, res, next) => {
     return next();
   }
 
+  const decoded = jwt.decode(token, { complete: true });
+  if (!decoded) {
+    console.log('unable to decode token');
+    return next();
+  }
+  if (isExpired(decoded)) {
+    console.log('expired');
+    return next();
+  }
+
+  const iss = `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`;
+  if (decoded.payload.iss !== iss) {
+    console.log(JSON.stringify(decoded));
+    console.log(process.env.AWS_COGNITO_USER_POOL_ID);
+    console.log('wrong iss');
+    return next();
+  }
+
   return fetch(`https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}/.well-known/jwks.json`)
   .then(response => response.json())
   .then((json) => {
-    const decoded = jwt.decode(token, { complete: true });
-    if (!decoded) {
-      console.log('unable to decode token');
-      return next();
-    }
-    if (isExpired(decoded)) {
-      console.log('expired');
-      return next();
-    }
-    const iss = `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`;
-    if (decoded.payload.iss !== iss) {
-      console.log(JSON.stringify(decoded));
-      console.log(process.env.AWS_COGNITO_USER_POOL_ID);
-      console.log('wrong iss');
-      return next();
-    }
     const jwtKey = json.keys.find(key => key.kid === decoded.header.kid);
     if (!jwtKey) {
       console.log('no jwt key');
