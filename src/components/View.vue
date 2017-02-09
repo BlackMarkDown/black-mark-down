@@ -1,18 +1,21 @@
 <template>
   <div>
     <h2>filename: {{  }}</h2>
-    <div>{{ content }}</div>
+    <div v-html="rendered"></div>
   </div>
 </template>
 
 <script>
+import MarkdownIt from 'markdown-it';
 import Explorer from '../aws/Explorer';
+
+const md = new MarkdownIt();
 
 export default {
   name: 'view',
   data() {
     return ({
-      content: '',
+      rendered: '',
     });
   },
   beforeRouteEnter(to, from, next) {
@@ -21,7 +24,8 @@ export default {
       Explorer.getFile(filePath, Explorer.ObjectType.PUBLIC_FILE)
       .then((content) => {
         /* eslint no-param-reassign: ["off", { "props": true }] */
-        vm.content = content;
+        const rendered = md.render(content);
+        vm.rendered = rendered;
       });
     });
   },

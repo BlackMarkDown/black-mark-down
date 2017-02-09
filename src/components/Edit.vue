@@ -17,7 +17,6 @@ import PostManager from '../aws/PostManager';
 import Router from '../Router';
 
 const md = new MarkdownIt();
-console.log(Ace, EditSession, UndoManager, md);
 
 export default {
   name: 'edit',
