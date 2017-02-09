@@ -21,7 +21,7 @@ module.exports = () => (req, res, next) => {
       return next();
     }
     console.log('cached', payload);
-    req.username = payload['cognito:username'];
+    req.username = payload.username;
     return next();
   }
 
@@ -64,10 +64,10 @@ module.exports = () => (req, res, next) => {
       return next();
     }
     authenticatedPayloads[token] = decoded.payload;
-
-    console.log('verified', decoded.payload['cognito:username']);
+    console.log(decoded.payload);
+    console.log('verified', decoded.payload.username);
     /* eslint no-param-reassign: "off" */
-    req.username = decoded.payload['cognito:username'];
+    req.username = decoded.payload.username;
     console.log(req.username);
     return next();
   })
