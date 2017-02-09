@@ -16,9 +16,9 @@
 import Explorer from '../aws/Explorer';
 import NewPostButton from './NewPostButton';
 
-const fetchItems = (vm, to) => {
-  const folderPath = to.params.path;
-  Explorer.queryPath(folderPath)
+const fetchItems = (vm, path) => {
+  console.log('fetchItems');
+  Explorer.queryPath(path)
   .then((data) => {
     /* eslint no-param-reassign: ["off", { "props": true }] */
     vm.items = [];
@@ -26,14 +26,14 @@ const fetchItems = (vm, to) => {
       vm.items.push({
         type: 'folder',
         name: folder.name,
-        path: `/docs/${folderPath}/${folder.name}`,
+        path: `/docs/${path}/${folder.name}`,
       })
     );
     data.files.forEach(file =>
       vm.items.push({
         type: 'file',
         name: file.name,
-        path: `/view/${folderPath}/${file.name}`,
+        path: `/view/${path}/${file.name}`,
       })
     );
   });
@@ -51,10 +51,10 @@ export default {
     };
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => fetchItems(vm, to));
+    next(vm => fetchItems(vm, to.params.path));
   },
   beforeRouteUpdate(to, from, next) {
-    fetchItems(this, to);
+    fetchItems(this, to.params.path);
     next();
   },
   components: {

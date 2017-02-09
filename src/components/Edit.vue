@@ -25,6 +25,19 @@ import Router from '../Router';
 
 const md = new MarkdownIt();
 let editor;
+
+function fetchFile(vm, path) {
+  Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
+  .then((content) => {
+    // eslint-disable-next-line
+    vm.content = content;
+    const lastIndexOfSlash = path.lastIndexOf('/');
+    const filename = path.substr(lastIndexOfSlash + 1);
+    // eslint-disable-next-line
+    vm.filename = filename;
+  });
+}
+
 export default {
   name: 'edit',
   data() {
@@ -75,18 +88,11 @@ export default {
     },
   },
   beforeRouteEnter(to, from, next) {
-    next((vm) => {
-      const filePath = to.params.path;
-      Explorer.getFile(filePath, Explorer.ObjectType.DRAFT_FILE)
-      .then((content) => {
-        // eslint-disable-next-line
-        vm.content = content;
-        const lastIndexOfSlash = filePath.lastIndexOf('/');
-        const filename = filePath.substr(lastIndexOfSlash + 1);
-        // eslint-disable-next-line
-        vm.filename = filename;
-      });
-    });
+    next(vm => fetchFile(vm, to.params.path));
+  },
+  beforeRouteUpdate(to, from, next) {
+    fetchFile(this, to.params.path);
+    next();
   },
 };
 </script>
