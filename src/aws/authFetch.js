@@ -1,11 +1,4 @@
-const TOKEN_LOCAL_STORAGE_KEY = 'authToken';
-
-let token = localStorage.getItem(TOKEN_LOCAL_STORAGE_KEY);
-
-export function updateToken(newToken) {
-  localStorage.setItem(TOKEN_LOCAL_STORAGE_KEY, newToken);
-  token = newToken;
-}
+import AWS from 'aws-sdk';
 
 export function is2XX(response) {
   return response.status >= 200 && response.status < 300;
@@ -13,6 +6,7 @@ export function is2XX(response) {
 
 export default function authFetch(url, options) {
   const fullURL = `${process.env.AMAZON_API_GATEWAY_URL}/${url}`;
+  const token = AWS.config.credentials.sessionToken;
   return fetch(fullURL, {
     ...options,
     headers: {
