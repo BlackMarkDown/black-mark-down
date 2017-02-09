@@ -2,7 +2,6 @@ import AWS from 'aws-sdk';
 import { CognitoUser, AuthenticationDetails } from 'amazon-cognito-identity-js';
 import userPool from './userPool';
 import { refreshDocumentClients } from '../documentClients';
-import { updateUsername } from './getUsername';
 
 export const MFA_REQUIRED = 'MFA Required';
 export const NEW_PASSWORD_REQUIRED = 'New Password Required';
@@ -34,7 +33,6 @@ const logIn = (username, password, {
         },
       });
       refreshDocumentClients();
-      updateUsername(username);
       resolve(result);
     },
     onFailure: err => reject(err),

@@ -11,6 +11,17 @@
 import IdentityManager from '../aws/IdentityManager';
 import Router from '../Router';
 
+function beforeRoute(next) {
+  IdentityManager.checkIsLoggedIn()
+  .then((isLoggedIn) => {
+    if (isLoggedIn) {
+      return IdentityManager.getUsername()
+        .then(username => next(`/docs/${username}`));
+    }
+    return next(true);
+  });
+}
+
 export default {
   name: 'log-in',
   data() {
@@ -22,12 +33,16 @@ export default {
   methods: {
     logIn() {
       IdentityManager.logIn(this.username, this.password)
-      .then(() => {
-        const username = IdentityManager.getUsername();
-        Router.push(`/docs/${username}/`);
-      })
+      .then(IdentityManager.getUsername)
+      .then(username => Router.push(`/docs/${username}`))
       .catch(err => alert(err));
     },
+  },
+  beforeRouteEnter(to, from, next) {
+    beforeRoute(next);
+  },
+  beforeRouteUpdate(to, from, next) {
+    beforeRoute(next);
   },
 };
 </script>

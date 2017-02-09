@@ -1,4 +1,5 @@
 export { default as changePassword } from './changePassword';
+export { default as checkIsLoggedIn } from './checkIsLoggedIn';
 export { default as completeNewPasswordChallenge } from './completeNewPasswordChallenge';
 export { default as getUsername } from './getUsername';
 export { default as logIn } from './logIn';

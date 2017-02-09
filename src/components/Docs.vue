@@ -2,6 +2,7 @@
   <div>
     <h2>path : {{path}}</h2>
     <ul>
+      <log-out-button />
       <new-post-button />
       <template v-for="item in items">
         <li>
@@ -15,6 +16,7 @@
 <script>
 import Explorer from '../aws/Explorer';
 import NewPostButton from './NewPostButton';
+import LogOutButton from './LogOutButton';
 
 const fetchItems = (vm, path) => {
   console.log('fetchItems');
@@ -59,6 +61,7 @@ export default {
   },
   components: {
     NewPostButton,
+    LogOutButton,
   },
 };
 </script>

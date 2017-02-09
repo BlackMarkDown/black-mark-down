@@ -20,6 +20,7 @@ import MarkdownIt from 'markdown-it';
 // eslint-disable-next-line
 import Ace, { EditSession, UndoManager } from 'ace';
 import Explorer from '../aws/Explorer';
+import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 
@@ -37,6 +38,18 @@ function fetchFile(vm, path) {
     vm.filename = filename;
   });
 }
+
+const checkIsOwner = filePath => new Promise(resolve =>
+  IdentityManager.checkIsLoggedIn()
+  .then((isLoggedIn) => {
+    if (!isLoggedIn) {
+      return resolve(false);
+    }
+    const indexOfFirstSlash = filePath.indexOf('/');
+    const fileOwner = filePath.substring(0, indexOfFirstSlash);
+    return IdentityManager.getUsername()
+      .then(username => resolve(fileOwner === username));
+  }));
 
 export default {
   name: 'edit',
@@ -88,11 +101,24 @@ export default {
     },
   },
   beforeRouteEnter(to, from, next) {
-    next(vm => fetchFile(vm, to.params.path));
+    checkIsOwner(to.params.path)
+    .then((isOwner) => {
+      console.log(isOwner);
+      if (!isOwner) {
+        return next('/');
+      }
+      return next(vm => fetchFile(vm, to.params.path));
+    });
   },
   beforeRouteUpdate(to, from, next) {
-    fetchFile(this, to.params.path);
-    next();
+    checkIsOwner(to.params.path)
+    .then((isOwner) => {
+      if (!isOwner) {
+        return next('/');
+      }
+      fetchFile(this, to.params.path);
+      return next();
+    });
   },
 };
 </script>

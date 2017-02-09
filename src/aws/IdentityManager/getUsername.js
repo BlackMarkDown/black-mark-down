@@ -1,9 +1,6 @@
-let username;
-
-export function updateUsername(newUsername) {
-  username = newUsername;
-}
+import getSessionValidUser from './getSessionValidUser';
 
 export default function getUsername() {
-  return username;
+  return getSessionValidUser()
+  .then(user => user.getUsername());
 }
