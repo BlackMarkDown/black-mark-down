@@ -90,6 +90,7 @@ export default {
       const content = editor.getValue();
       this.$data.content = content;
     });
+    fetchFile(this, this.$route.params.path);
   },
   watch: {
     content(content) {
@@ -107,7 +108,7 @@ export default {
       if (!isOwner) {
         return next('/');
       }
-      return next(vm => fetchFile(vm, to.params.path));
+      return next();
     });
   },
   beforeRouteUpdate(to, from, next) {
