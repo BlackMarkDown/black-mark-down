@@ -23,6 +23,7 @@ import Explorer from '../aws/Explorer';
 import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
+import getFileOwner from '../utils/getFileOwner';
 
 const md = new MarkdownIt();
 let editor;
@@ -45,8 +46,7 @@ const checkIsOwner = filePath => new Promise(resolve =>
     if (!isLoggedIn) {
       return resolve(false);
     }
-    const indexOfFirstSlash = filePath.indexOf('/');
-    const fileOwner = filePath.substring(0, indexOfFirstSlash);
+    const fileOwner = getFileOwner(filePath);
     return IdentityManager.getUsername()
       .then(username => resolve(fileOwner === username));
   }));

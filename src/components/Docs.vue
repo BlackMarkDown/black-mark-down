@@ -1,9 +1,10 @@
 <template>
   <div>
     <h2>path : {{path}}</h2>
+    <log-in-button v-if="!isLoggedIn" />
+    <log-out-button v-if="isLoggedIn" />
+    <new-post-button v-if="isOwner" />
     <ul>
-      <log-out-button />
-      <new-post-button />
       <template v-for="item in items">
         <li>
           <router-link :to="item.path">{{ item.type }} - {{ item.name }}</router-link>
@@ -15,11 +16,13 @@
 
 <script>
 import Explorer from '../aws/Explorer';
+import IdentityManager from '../aws/IdentityManager';
 import NewPostButton from './NewPostButton';
 import LogOutButton from './LogOutButton';
+import LogInButton from './LogInButton';
+import getFileOwner from '../utils/getFileOwner';
 
 const fetchItems = (vm, path) => {
-  console.log('fetchItems');
   Explorer.queryPath(path)
   .then((data) => {
     /* eslint no-param-reassign: ["off", { "props": true }] */
@@ -50,10 +53,28 @@ export default {
     return {
       path,
       items: [],
+      isLoggedIn: false,
+      isOwner: false,
     };
   },
+  mounted() {
+    fetchItems(this, this.$route.params.path);
+
+    IdentityManager.checkIsLoggedIn()
+    .then((isLoggedIn) => {
+      this.$data.isLoggedIn = isLoggedIn;
+    });
+
+    const filePath = this.$route.params.path;
+    const fileOwner = getFileOwner(filePath);
+
+    IdentityManager.getUsername()
+    .then((username) => {
+      this.$data.isOwner = (username === fileOwner);
+    });
+  },
   beforeRouteEnter(to, from, next) {
-    next(vm => fetchItems(vm, to.params.path));
+    next();
   },
   beforeRouteUpdate(to, from, next) {
     fetchItems(this, to.params.path);
@@ -62,6 +83,7 @@ export default {
   components: {
     NewPostButton,
     LogOutButton,
+    LogInButton,
   },
 };
 </script>
