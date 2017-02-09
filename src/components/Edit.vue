@@ -1,7 +1,14 @@
 <template>
   <div>
-    <h2>Editing {{filename}}</h2>
-    <div id="editor">abc</div>
+    <template v-if="isEditingFilename">
+      <input v-model="filename">
+      <button v-on:click="save()">confirm</button>
+    </template>
+    <template v-else>
+      <h2>{{filename}}</h2>
+      <button v-on:click="isEditingFilename = true">change filename</button>
+    </template>
+    <div id="editor">{{content}}</div>
     <div v-html="rendered"></div>
     <button v-on:click="save()">save</button>
     <button v-on:click="post()">post</button>
@@ -17,37 +24,55 @@ import PostManager from '../aws/PostManager';
 import Router from '../Router';
 
 const md = new MarkdownIt();
-
+let editor;
 export default {
   name: 'edit',
   data() {
     return {
-      filename: '', // TODO
+      filename: '',
       content: '',
       rendered: '',
+      isEditingFilename: false,
     };
   },
   methods: {
     save() {
-      const filePath = this.$route.params.path;
-      PostManager.saveWhileEditing(filePath, this.$data.content)
-      .then(() => alert('Successfully saved'));
+      const newFilePath = this.generateNewFilePath();
+      PostManager.saveWhileEditing(newFilePath, this.$data.content)
+      .then((path) => {
+        Router.replace(`/edit/${path}`);
+        alert('Successfully saved');
+        this.$data.isEditingFilename = false;
+      });
     },
     post() {
-      const filePath = this.$route.params.path;
-      console.log(this.$data.content);
-      PostManager.post(filePath, this.$data.content)
+      const newFilePath = this.generateNewFilePath();
+      PostManager.post(newFilePath, this.$data.content)
       .then(path => Router.push(`/view/${path}`));
+    },
+    generateNewFilePath() {
+      const filePath = this.$route.params.path;
+      const lastIndexOfSlash = filePath.lastIndexOf('/');
+      const filenameRemovedFilePath = filePath.substring(0, lastIndexOfSlash);
+      const newFilePath = `${filenameRemovedFilePath}/${this.$data.filename}`;
+      return newFilePath;
     },
   },
   mounted() {
-    const editor = Ace.edit('editor');
+    editor = Ace.edit('editor');
     editor.on('change', () => {
       const content = editor.getValue();
       this.$data.content = content;
+    });
+  },
+  watch: {
+    content(content) {
+      if (editor.getValue() !== content) {
+        editor.setValue(content);
+      }
       const rendered = md.render(content);
       this.$data.rendered = rendered;
-    });
+    },
   },
   beforeRouteEnter(to, from, next) {
     next((vm) => {
@@ -56,9 +81,10 @@ export default {
       .then((content) => {
         // eslint-disable-next-line
         vm.content = content;
-        const rendered = md.render(content);
+        const lastIndexOfSlash = filePath.lastIndexOf('/');
+        const filename = filePath.substr(lastIndexOfSlash + 1);
         // eslint-disable-next-line
-        vm.rendered = rendered;
+        vm.filename = filename;
       });
     });
   },
