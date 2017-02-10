@@ -2,7 +2,7 @@
   <div>
     <h2>Log In!</h2>
     <router-link :to="'/signup'">Join Us</router-link>
-      Username: <input v-model="username" placeholder="or Email" >
+      Username: <input v-model="username" placeholder="" >
       Password: <input type="password" v-model="password" placeholder="">
     <button v-on:click="logIn()">Log In</button>
   </div>
