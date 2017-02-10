@@ -19,4 +19,11 @@ const Router = new VueRouter({
   routes,
 });
 
+Router.beforeEach((to, from, next) => {
+  if (to.hash.indexOf('#!') === 0 && to.path === '/') {
+    return next(to.hash.substring(2));
+  }
+  return next();
+});
+
 export default Router;
