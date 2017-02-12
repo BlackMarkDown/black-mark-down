@@ -29,6 +29,8 @@ import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
 
+const MarkdownMode = Ace.require('ace/mode/markdown').Mode;
+
 const md = new MarkdownIt();
 let editor;
 
@@ -87,14 +89,21 @@ export default {
       const newFilePath = `${filenameRemovedFilePath}/${this.$data.filename}`;
       return newFilePath;
     },
+    initEditor() {
+      editor = Ace.edit('editor');
+      console.log(MarkdownMode);
+      editor.session.setMode(new MarkdownMode());
+      editor.setOption('showGutter', false);
+      editor.setOption('fontSize', 17);
+      editor.setOption('hScrollBarAlwaysVisible', false);
+      editor.on('change', () => {
+        const content = editor.getValue();
+        this.$data.content = content;
+      });
+    },
   },
   mounted() {
-    editor = Ace.edit('editor');
-    editor.setOption('showGutter', false);
-    editor.on('change', () => {
-      const content = editor.getValue();
-      this.$data.content = content;
-    });
+    this.initEditor();
     fetchFile(this, this.$route.params.path);
   },
   watch: {
@@ -153,6 +162,8 @@ button {
   height: 100%;
   float: left;
   border: 1px solid red;
+  padding-left: 35px;
+  padding-right: 35px;
 }
 #viewer {
   width: 50%;

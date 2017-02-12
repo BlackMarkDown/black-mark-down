@@ -8,3 +8,5 @@ selenium-debug.log
 .env.js
 
 lambda-function.zip
+
+yarn-error.log
