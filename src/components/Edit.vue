@@ -90,6 +90,7 @@ export default {
   },
   mounted() {
     editor = Ace.edit('editor');
+    editor.setOption('showGutter', false);
     editor.on('change', () => {
       const content = editor.getValue();
       this.$data.content = content;
