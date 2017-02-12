@@ -1,17 +1,21 @@
 <template>
-  <div>
+  <div id="page">
+    <div id="header">
     <template v-if="isEditingFilename">
       <input v-model="filename">
       <button v-on:click="save()">confirm</button>
     </template>
     <template v-else>
-      <h2>{{filename}}</h2>
+      <div id="title">{{filename}}</div>
       <button v-on:click="isEditingFilename = true">change filename</button>
     </template>
-    <div id="editor">{{content}}</div>
-    <div v-html="rendered"></div>
     <button v-on:click="save()">save</button>
     <button v-on:click="post()">post</button>
+    </div>
+    <div id="editor-container">
+      <div id="editor">{{content}}</div>
+      <div id="viewer" v-html="rendered"></div>
+    </div>
   </div>
 </template>
 
@@ -124,10 +128,42 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+#page {
+  width: 100%;
+  height: 100%
+}
+#header {
+  width: 100%;
+  height: 30px;
+}
+#title {
+  display: inline-block;
+}
+button {
+  display: inline-block;
+}
+#editor-container {
+  width: 100%;
+  height: calc(100% - 30px);
+}
 #editor {
-  position: relative;
-  width: 500px;
-  height: 100px;
+  width: 50%;
+  height: 100%;
+  float: left;
+  border: 1px solid red;
+}
+#viewer {
+  width: 50%;
+  height: 100%;
+  float: right;
+  border: 1px solid red;
+  overflow-wrap: break-word;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 5px;
+}
+* {
+    box-sizing: border-box;
 }
 </style>
