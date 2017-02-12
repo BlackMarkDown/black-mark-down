@@ -96,6 +96,8 @@ export default {
       editor.setOption('showGutter', false);
       editor.setOption('fontSize', 17);
       editor.setOption('hScrollBarAlwaysVisible', false);
+      console.log(editor);
+      editor.setOption('wrap', true);
       editor.on('change', () => {
         const content = editor.getValue();
         this.$data.content = content;
