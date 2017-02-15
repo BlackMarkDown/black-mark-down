@@ -13,23 +13,19 @@
     <button v-on:click="post()">post</button>
     </div>
     <div id="editor-container">
-      <div id="editor">{{content}}</div>
-      <div id="viewer" v-html="rendered"></div>
+      <textarea ref="editor" id="editor">{{content}}</textarea>
     </div>
   </div>
 </template>
 
 <script>
 import MarkdownIt from 'markdown-it';
-// eslint-disable-next-line
-import Ace, { EditSession, UndoManager } from 'ace';
+import SimpleMDE from 'simplemde';
 import Explorer from '../aws/Explorer';
 import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
-
-const MarkdownMode = Ace.require('ace/mode/markdown').Mode;
 
 const md = new MarkdownIt();
 let editor;
@@ -90,15 +86,13 @@ export default {
       return newFilePath;
     },
     initEditor() {
-      editor = Ace.edit('editor');
-      editor.session.setMode(new MarkdownMode());
-      editor.setOption('showGutter', false);
-      editor.setOption('fontSize', 17);
-      editor.setOption('hScrollBarAlwaysVisible', false);
-      editor.setOption('wrap', true);
-      editor.on('change', () => {
-        const content = editor.getValue();
-        this.$data.content = content;
+      const editorElement = this.$refs.editor;
+      editor = new SimpleMDE({
+        element: editorElement,
+        spellChecker: false,
+        status: false,
+        toolbar: false,
+        toolbarTips: false,
       });
     },
   },
@@ -108,8 +102,8 @@ export default {
   },
   watch: {
     content(content) {
-      if (editor.getValue() !== content) {
-        editor.setValue(content);
+      if (editor.value() !== content) {
+        editor.value(content);
       }
       const rendered = md.render(content);
       this.$data.rendered = rendered;
@@ -157,22 +151,12 @@ button {
   height: calc(100% - 30px);
 }
 #editor {
-  width: 50%;
+  width: 100%;
   height: 100%;
   float: left;
   border: 1px solid red;
   padding-left: 35px;
   padding-right: 35px;
-}
-#viewer {
-  width: 50%;
-  height: 100%;
-  float: right;
-  border: 1px solid red;
-  overflow-wrap: break-word;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 5px;
 }
 * {
     box-sizing: border-box;
