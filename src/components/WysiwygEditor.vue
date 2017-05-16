@@ -12,23 +12,19 @@
     <button v-on:click="save()">save</button>
     <button v-on:click="post()">post</button>
     </div>
-    <div id="editor-container">
-      <textarea ref="editor" id="editor">{{content}}</textarea>
+    <div id="editor">
     </div>
   </div>
 </template>
 
 <script>
+import Quill from 'quill';
 import MarkdownIt from 'markdown-it';
-import SimpleMDE from 'simplemde';
 import Explorer from '../aws/Explorer';
 import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
-
-const md = new MarkdownIt();
-let editor;
 
 function fetchFile(vm, path) {
   Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
@@ -61,6 +57,8 @@ export default {
       content: '',
       rendered: '',
       isEditingFilename: false,
+      md: undefined,
+      editor: undefined,
     };
   },
   methods: {
@@ -86,28 +84,143 @@ export default {
       return newFilePath;
     },
     initEditor() {
-      const editorElement = this.$refs.editor;
-      editor = new SimpleMDE({
-        element: editorElement,
-        spellChecker: false,
-        status: false,
-        toolbar: false,
-        toolbarTips: false,
+      const editor = this.$data.editor = new Quill('#editor');
+      editor.on('text-change', (delta, oldDelta, source) => {
+        console.log(delta, oldDelta, source);
+        if (source === 'silent') {
+          return;
+        }
+        this.markUp();
       });
+      editor.on('selection-change', (range, oldRange, source) => {
+        console.log(JSON.stringify({
+          range,
+          oldRange,
+          source,
+        }));
+      });
+    },
+    markUp() {
+      const {
+        editor,
+        md,
+      } = this.$data;
+      const text = editor.getText();
+      console.log(text);
+      const markdownTree = md.parse(text);
+      console.log(markdownTree);
+
+      function isLastSubstring(string, substring) {
+        return string.lastIndexOf(substring) >= 0
+          && string.length === string.lastIndexOf(substring) + substring.length;
+      }
+
+      const OPEN = '_open';
+      const CLOSE = '_close';
+
+      function isOpenType(type) {
+        return isLastSubstring(type, OPEN);
+      }
+
+      function isCloseType(type) {
+        return isLastSubstring(type, CLOSE);
+      }
+
+      function getPureType(type) {
+        let suffix = '';
+        if (isOpenType(type)) {
+          suffix = OPEN;
+        } else if (isCloseType(type)) {
+          suffix = CLOSE;
+        }
+        return type.substring(0, type.length - suffix.length);
+      }
+
+      function findCloseToken(tokens, currentToken) {
+        const {
+          type: currentType,
+        } = currentToken;
+        const closeType = `${getPureType(currentType)}${CLOSE}`;
+        const indexOfToken = tokens.indexOf(currentToken);
+        const searchableTokens = tokens.slice(indexOfToken);
+        return searchableTokens.find(token =>
+          token.type === closeType);
+      }
+
+      function getFormatLength(tokens, startToken, endToken) {
+        const indexOfStartToken = tokens.indexOf(startToken);
+        const indexOfEndToken = tokens.indexOf(endToken);
+        const countableTokens = tokens.slice(indexOfStartToken + 1, indexOfEndToken);
+        console.log(indexOfStartToken, indexOfEndToken, countableTokens);
+        return countableTokens.reduce((length, token) =>
+          length + token.content.length + token.markup.length,
+          0);
+      }
+
+      const formatOfTag = {
+        strong: {
+          bold: true,
+        },
+        em: {
+          italic: true,
+        },
+      };
+      const inlineMarkupFormat = {
+        color: 'rgb(0, 0, 255)',
+      };
+
+      function formatInline(tokens) {
+        let textIndex = 0;
+        tokens.forEach((token) => {
+          const {
+            content,
+            type,
+            tag,
+            markup,
+          } = token;
+          if (isOpenType(type)) {
+            const format = formatOfTag[tag];
+            if (format) {
+              const closeToken = findCloseToken(tokens, token);
+              const formatLength = getFormatLength(tokens, token, closeToken);
+              console.log(textIndex, formatLength);
+              editor.formatText(textIndex + markup.length, formatLength, format, 'silent');
+              editor.formatText(textIndex, markup.length, inlineMarkupFormat, 'silent');
+              editor.formatText(textIndex + markup.length + formatLength,
+                closeToken.markup.length,
+                inlineMarkupFormat,
+                'silent');
+            }
+            console.log(`no format for ${tag}`);
+          }
+          textIndex += content.length + markup.length;
+        });
+      }
+
+      function iterate(tokens) {
+        tokens.forEach((token) => {
+          const {
+            type,
+            content,
+            children,
+          } = token;
+          console.log(type, content);
+          switch (type) {
+            case 'inline': {
+              formatInline(children);
+            } break;
+            default: break;
+          }
+        });
+      }
+      editor.removeFormat(0, editor.getLength() - 1, 'silent');
+      iterate(markdownTree);
     },
   },
   mounted() {
     this.initEditor();
+    this.$data.md = new MarkdownIt();
     fetchFile(this, this.$route.params.path);
-  },
-  watch: {
-    content(content) {
-      if (editor.value() !== content) {
-        editor.value(content);
-      }
-      const rendered = md.render(content);
-      this.$data.rendered = rendered;
-    },
   },
   beforeRouteEnter(to, from, next) {
     checkIsOwner(to.params.path)
