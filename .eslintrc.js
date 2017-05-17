@@ -35,5 +35,6 @@ module.exports = {
     File: false,
     alert: false,
     localStorage: false,
+    document: false,
   }
 }
