@@ -25,6 +25,12 @@ import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
+import DisplayStyle from './Editor/formats/DisplayStyle';
+
+Quill.register({
+  'attribute/style/display': DisplayStyle,
+  'formats/display': DisplayStyle,
+}, true);
 
 function fetchFile(vm, path) {
   Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
@@ -166,7 +172,8 @@ export default {
         },
       };
       const inlineMarkupFormat = {
-        color: 'rgb(0, 0, 255)',
+        // color: 'rgb(0, 0, 255)',
+        display: 'none',
       };
 
       function formatInline(tokens) {

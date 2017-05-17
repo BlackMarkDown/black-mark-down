@@ -10,3 +10,5 @@ selenium-debug.log
 lambda-function.zip
 
 yarn-error.log
+
+*.swp
