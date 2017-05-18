@@ -2,6 +2,12 @@ import findBiggestInlineWrapper from './findBiggestInlineWrapper';
 
 export default function getStartAndEndIndexes(containerElement) {
   const selection = window.getSelection();
+  if (selection.rangeCount <= 0) {
+    return {
+      start: 0,
+      end: 0,
+    };
+  }
   const range = selection.getRangeAt(0);
   const tempRange = range.cloneRange();
   tempRange.selectNodeContents(containerElement);
