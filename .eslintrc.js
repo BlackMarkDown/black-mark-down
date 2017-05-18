@@ -36,5 +36,6 @@ module.exports = {
     alert: false,
     localStorage: false,
     document: false,
+    NodeFilter: false,
   }
 }
