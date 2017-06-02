@@ -13,7 +13,7 @@
     <button v-on:click="post()">post</button>
     </div>
     <div id="editor" ref="editor" contenteditable="true">
-      <span>asdf**fdsa**asdf</span>
+      <span>asdf<span class="md-meta">**</span>fdsaa**asdf</span>
     </div>
   </div>
 </template>

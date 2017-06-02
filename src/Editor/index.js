@@ -1,19 +1,50 @@
 import expand from './expand';
-import getRange from './getRange';
+import getNodeAndOffset from './getNodeAndOffset';
 import getStartAndEndIndexes from './getStartAndEndIndexes';
 import render from './render';
 
-function restoreSelection(containerElement, range) {
+function restoreSelection(containerElement, start, end) {
   const sel = window.getSelection();
   sel.removeAllRanges();
-  sel.addRange(range);
-}
 
+  const {
+    node: startNode,
+    offset: startOffset,
+  } = getNodeAndOffset(containerElement, start);
+  const {
+    node: endNode,
+    offset: endOffset,
+  } = getNodeAndOffset(containerElement, end);
+
+  const range = document.createRange();
+  range.setStart(startNode, startOffset);
+  sel.addRange(range);
+  sel.extend(endNode, endOffset);
+}
 
 export default class Editor {
   constructor(element) {
     this.element = element;
-    element.addEventListener('keyup', () => this.update());
+    this.selectionchangeByKey = false;
+    document.addEventListener('selectionchange', () => {
+      if (this.selectionchangeByInput) {
+        this.selectionchangeByInput = false;
+        this.update();
+      }
+    });
+    element.addEventListener('keydown', () => {
+      this.selectionchangeByInput = true;
+    });
+    element.addEventListener('mousedown', () => {
+      this.isMouseDown = true;
+      this.selectionchangeByInput = true;
+    });
+    element.addEventListener('mousemove', () => {
+      this.selectionchangeByInput = true;
+    });
+    element.addEventListener('mouseup', () => {
+      this.isMouseDown = false;
+    });
     this.update();
   }
   update() {
@@ -25,8 +56,7 @@ export default class Editor {
     } = getStartAndEndIndexes(this.element);
 
     this.element.innerHTML = `${renderedHTML}`;
-    const range = getRange(this.element, start, end);
-    expand(range);
-    restoreSelection(this.element, range);
+    expand(this.element, start, end);
+    restoreSelection(this.element, start, end);
   }
 }
