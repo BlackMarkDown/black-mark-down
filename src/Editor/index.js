@@ -26,21 +26,18 @@ export default class Editor {
   constructor(element) {
     this.element = element;
     this.selectionchangeByKey = false;
-    document.addEventListener('selectionchange', () => {
-      if (this.selectionchangeByInput) {
-        this.selectionchangeByInput = false;
-        this.update();
-      }
-    });
     element.addEventListener('keydown', () => {
       this.selectionchangeByInput = true;
+      setTimeout(() => this.update());
     });
     element.addEventListener('mousedown', () => {
       this.isMouseDown = true;
-      this.selectionchangeByInput = true;
+      setTimeout(() => this.update());
     });
     element.addEventListener('mousemove', () => {
-      this.selectionchangeByInput = true;
+      if (this.isMouseDown) {
+        setTimeout(() => this.update());
+      }
     });
     element.addEventListener('mouseup', () => {
       this.isMouseDown = false;
