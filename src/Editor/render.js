@@ -30,14 +30,7 @@ function renderMarkdownTree(markdownTree) {
   , '');
 }
 
-export default function rerenderHTML(element) {
-  const markdownContent = element.innerHTML
-    .replace(/<p(.*?)>/g, '\n\n')
-    .replace(/<br(.*?)>/g, '\n')
-    .replace(/<[^>]*>/g, '');
+export default function rerenderHTML(markdownContent) {
   const markdownTree = md.parse(markdownContent);
-  const renderedHTML = renderMarkdownTree(markdownTree);
-
-  /* eslint no-param-reassign: ["error", { "props": false }]*/
-  element.innerHTML = `${renderedHTML}`;
+  return renderMarkdownTree(markdownTree);
 }

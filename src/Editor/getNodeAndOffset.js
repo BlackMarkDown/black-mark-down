@@ -11,8 +11,12 @@ export default function getNodeAndOffset(containerElement, index) {
       nodeName,
       length,
     } = node;
-    if (nodeName === '#text' || nodeName === 'BR' || nodeName === 'P') {
-      if (nodeName === '#text' && index >= currentIndex && index <= currentIndex + length) {
+    if (nodeName === '#text'
+      || nodeName === 'BR'
+      || nodeName === 'P') {
+      if (nodeName === '#text'
+        && index >= currentIndex
+        && index <= currentIndex + length) {
         return {
           node,
           offset: index - currentIndex,

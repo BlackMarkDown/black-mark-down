@@ -13,10 +13,17 @@
     <button v-on:click="post()">post</button>
     </div>
     <div id="editor" ref="editor" contenteditable="true">
-      <p>
-        <span>abc
-        abc</span>
-      </p>
+      <p><span md-inline="plain">assdfa</span><span md-inline="strong_open"><span class="md-meta md-before">**</span><strong><span md-inline="plain">asdf</span></strong><span class="md-meta md-after">**</span></span><span md-inline="plain">assdfa</span></p>
+      <!--<p>
+        <span md-inline="plain">assdfa</span>
+        <span md-inline="strong_open">
+          <span class="md-meta md-before">**</span>
+          <strong>
+            <span md-inline="plain">asdf</span>
+          </strong>
+          <span class="md-meta md-after">**</span>
+        </span>
+      </p>-->
     </div>
   </div>
 </template>
