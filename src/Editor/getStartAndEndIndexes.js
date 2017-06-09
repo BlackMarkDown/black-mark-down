@@ -1,29 +1,18 @@
 import findBiggestInlineWrapper from './findBiggestInlineWrapper';
+import treeWalk from './treeWalk';
 
 function findOffset(containerElement, targetNode, innerOffset) {
-  /* eslint no-bitwise: ["error", { "allow": ["|"] }] */
-  const walker = document.createTreeWalker(containerElement,
-    NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT);
-  let index = 0;
-  let node = walker.nextNode();
-  while (node) {
-    const {
-      nodeName,
-      length,
-    } = node;
+  return treeWalk(containerElement, (node, offset) => {
     if (node === targetNode) {
-      return index + innerOffset;
+      switch (node.nodeName) {
+        case '#text':
+          return offset + innerOffset;
+        default:
+          return offset;
+      }
     }
-    if (nodeName === '#text') {
-      index += length;
-    } else if (nodeName === 'BR') {
-      index += 1;
-    } else if (nodeName === 'P') {
-      index += 2;
-    }
-    node = walker.nextNode();
-  }
-  throw new Error('No node');
+    return null;
+  });
 }
 
 export default function getStartAndEndIndexes(containerElement) {

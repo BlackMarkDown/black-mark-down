@@ -13,7 +13,7 @@
     <button v-on:click="post()">post</button>
     </div>
     <div id="editor" ref="editor" contenteditable="true">
-      <p><span md-inline="plain">assdfa</span><span md-inline="strong_open"><span class="md-meta md-before">**</span><strong><span md-inline="plain">asdf</span></strong><span class="md-meta md-after">**</span></span><span md-inline="plain">assdfa</span></p>
+      <p><span md-inline="plain">12345</span></p>
       <!--<p>
         <span md-inline="plain">assdfa</span>
         <span md-inline="strong_open">
@@ -195,6 +195,32 @@ img {
 .md-before,
 .md-after {
     padding: 0px;
+}
+
+p {
+  white-space: pre-wrap;
+  word-break: normal;
+  word-wrap: break-word;
+}
+
+*:before, *:after, * {
+    box-sizing: border-box;
+}
+
+.md-line {
+    display: block;
+    width: 100%;
+}
+
+.md-line:empty:after {
+    content: '\200B';
+}
+
+#editor:after {
+    content: "";
+    font-size: 0;
+    display: block;
+    height: 0;
 }
 
 </style>

@@ -1,56 +1,32 @@
+import elementToMarkdown from './elementToMarkdown';
 import expand from './expand';
-import getNodeAndOffset from './getNodeAndOffset';
+import restoreSelection from './restoreSelection';
 import getStartAndEndIndexes from './getStartAndEndIndexes';
 import render from './render';
 
-function restoreSelection(containerElement, start, end) {
-  const selection = window.getSelection();
-  selection.removeAllRanges();
-
-  const {
-    node: startNode,
-    offset: startOffset,
-  } = getNodeAndOffset(containerElement, start);
-  const {
-    node: endNode,
-    offset: endOffset,
-  } = getNodeAndOffset(containerElement, end);
-
-  const range = document.createRange();
-  range.setStart(startNode, startOffset);
-  selection.addRange(range);
-  selection.extend(endNode, endOffset);
+function isDeleteEvent(event) {
+  const keys = ['Backspace', 'Delete'];
+  return keys.includes(event.key);
 }
-
-const editorEvent = {
-  DEFAULT: 'default',
-  DELETE: 'delete',
-};
 
 export default class Editor {
   constructor(element) {
     this.element = element;
-    this.selectionchangeByKey = false;
     element.addEventListener('keydown', (event) => {
-      this.selectionchangeByInput = true;
-      if (event.key === 'Backspace' || event.key === 'Delete') {
+      if (isDeleteEvent(event)) {
         event.preventDefault();
-        setTimeout(() => this.update(editorEvent.DELETE));
-        return;
+      } else if (event.key === 'Enter') {
+        event.preventDefault();
+        if (event.shiftKey) { // asdf \n asdf 에서 앞엣줄에서 쉬프트 엔터 누르면 이상해짐
+          document.execCommand('insertText', false, '\n');
+        } else {
+          document.execCommand('insertText', false, '\n\n');
+        }
       }
-      setTimeout(() => this.update(editorEvent.DEFAULT));
+      setTimeout(() => this.update(event));
     });
-    element.addEventListener('mousedown', () => {
-      this.isMouseDown = true;
-      setTimeout(() => this.update(editorEvent.DEFAULT));
-    });
-    element.addEventListener('mousemove', () => {
-      if (this.isMouseDown) {
-        setTimeout(() => this.update(editorEvent.DEFAULT));
-      }
-    });
-    element.addEventListener('mouseup', () => {
-      this.isMouseDown = false;
+    element.addEventListener('mouseup', (event) => {
+      setTimeout(() => this.update(event));
     });
     this.update();
   }
@@ -61,22 +37,35 @@ export default class Editor {
       start,
       end,
     } = getStartAndEndIndexes(this.element);
-    let text = this.element.innerHTML
-      .replace(/<p(.*?)>/g, '\n\n')
-      .replace(/<br(.*?)>/g, '\n')
-      .replace(/<[^>]*>/g, '');
+    let text = elementToMarkdown(this.element);
 
-    if (event === editorEvent.DELETE) {
-      const deleteLeftOffset = Math.min(start, end);
-      const deleteRightOffset =
-        start === end
-        ? deleteLeftOffset + 1
-        : Math.max(start, end);
+    if (isDeleteEvent(event)) {
+      let deleteLeftOffset;
+      let deleteRightOffset;
+      if (start === end) {
+        if (event.key === 'Delete') {
+          deleteLeftOffset = start;
+          deleteRightOffset = end + 1;
+        } else if (event.key === 'Backspace') {
+          deleteLeftOffset = start - 1;
+          deleteRightOffset = end;
+        } else {
+          throw new Error('Unhandled delete event');
+        }
+      } else {
+        deleteLeftOffset = Math.min(start, end);
+        deleteRightOffset = Math.max(start, end);
+      }
       text = `${text.substr(0, deleteLeftOffset)}${text.substr(deleteRightOffset)}`;
-
       start = end = deleteLeftOffset;
     }
-    const renderedHTML = render(text);
+
+    const renderedHTML = text.split('\n\n').map(paragraph =>
+      `<p>${paragraph.split('\n')
+        .map(inlineText => `<span class="md-line">${render(inlineText)}</span>`)
+        .join('')}</p>`
+    ).join('');
+
     this.element.innerHTML = renderedHTML;
     expand(this.element, start, end);
     restoreSelection(this.element, start, end);
