@@ -1,11 +1,11 @@
 import expand from './expand';
 import getNodeAndOffset from './getNodeAndOffset';
 import getStartAndEndIndexes from './getStartAndEndIndexes';
-import render from './render';
+import rerenderHTML from './rerenderHTML';
 
 function restoreSelection(containerElement, start, end) {
-  const sel = window.getSelection();
-  sel.removeAllRanges();
+  const selection = window.getSelection();
+  selection.removeAllRanges();
 
   const {
     node: startNode,
@@ -18,8 +18,8 @@ function restoreSelection(containerElement, start, end) {
 
   const range = document.createRange();
   range.setStart(startNode, startOffset);
-  sel.addRange(range);
-  sel.extend(endNode, endOffset);
+  selection.addRange(range);
+  selection.extend(endNode, endOffset);
 }
 
 export default class Editor {
@@ -48,14 +48,14 @@ export default class Editor {
     this.update();
   }
   update() {
-    const textContent = this.element.innerHTML.replace(/<[^>]*>/g, '');
-    const renderedHTML = render(textContent);
+    // NOTE: Should get indexes before reseting innerHTML
+    // because Selection would be destroyed after reseting innerHTML
     const {
       start,
       end,
     } = getStartAndEndIndexes(this.element);
 
-    this.element.innerHTML = `${renderedHTML}`;
+    rerenderHTML(this.element);
     expand(this.element, start, end);
     restoreSelection(this.element, start, end);
   }
