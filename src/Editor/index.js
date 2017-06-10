@@ -45,9 +45,15 @@ export default class Editor {
       if (start === end) {
         if (event.key === 'Delete') {
           deleteLeftOffset = start;
-          deleteRightOffset = end + 1;
+          deleteRightOffset =
+            text[end] === '\n' && text[end + 1] === '\n'
+            ? end + 2
+            : end + 1;
         } else if (event.key === 'Backspace') {
-          deleteLeftOffset = start - 1;
+          deleteLeftOffset =
+            text[start] === '\n' && text[start - 1] === '\n'
+            ? start - 2
+            : start - 1;
           deleteRightOffset = end;
         } else {
           throw new Error('Unhandled delete event');
