@@ -13,7 +13,7 @@
     <button v-on:click="post()">post</button>
     </div>
     <div id="editor" ref="editor" contenteditable="true">
-      <p><span md-inline="plain">12345</span></p>
+      <span class="md-line">12345asdf</span>
       <!--<p>
         <span md-inline="plain">assdfa</span>
         <span md-inline="strong_open">

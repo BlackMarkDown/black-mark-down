@@ -55,8 +55,7 @@ export default function expand(containerElement, start, end) {
 
   addExpandClass(startNode);
   addExpandClass(endNode);
-
-  if (startNode !== endNode) {
+  if (startNode && endNode && startNode !== endNode) {
     const leftNode = isRightDirection ? startNode : endNode;
     const rightNode = isRightDirection ? endNode : startNode;
 

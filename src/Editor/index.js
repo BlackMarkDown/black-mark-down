@@ -6,22 +6,16 @@ import render from './render';
 
 function isDeleteEvent(event) {
   const keys = ['Backspace', 'Delete'];
-  return keys.includes(event.key);
+  return event && keys.includes(event.key);
 }
 
 export default class Editor {
   constructor(element) {
     this.element = element;
+
     element.addEventListener('keydown', (event) => {
       if (isDeleteEvent(event)) {
         event.preventDefault();
-      } else if (event.key === 'Enter') {
-        event.preventDefault();
-        if (event.shiftKey) { // asdf \n asdf 에서 앞엣줄에서 쉬프트 엔터 누르면 이상해짐
-          document.execCommand('insertText', false, '\n');
-        } else {
-          document.execCommand('insertText', false, '\n\n');
-        }
       }
       setTimeout(() => this.update(event));
     });
@@ -37,6 +31,7 @@ export default class Editor {
       start,
       end,
     } = getStartAndEndIndexes(this.element);
+
     let text = elementToMarkdown(this.element);
 
     if (isDeleteEvent(event)) {
@@ -66,10 +61,8 @@ export default class Editor {
       start = end = deleteLeftOffset;
     }
 
-    const renderedHTML = text.split('\n\n').map(paragraph =>
-      `<p>${paragraph.split('\n')
-        .map(inlineText => `<span class="md-line">${render(inlineText)}</span>`)
-        .join('')}</p>`
+    const renderedHTML = text.split('\n').map(line =>
+      `<span class="md-line">${render(line) || '<br>'}</span>`
     ).join('');
 
     this.element.innerHTML = renderedHTML;
