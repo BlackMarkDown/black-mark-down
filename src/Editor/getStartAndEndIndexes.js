@@ -26,21 +26,38 @@ export default function getStartAndEndIndexes(containerElement) {
   let start = findOffset(containerElement, anchorNode, anchorOffset);
   let end = findOffset(containerElement, focusNode, focusOffset);
 
-  if (anchorNode.textContent.length === anchorOffset) {
+  if (anchorOffset === 0) {
     const wrapperNode = findBiggestInlineWrapper(anchorNode);
-    if (wrapperNode && !wrapperNode.classList.contains('md-expand')) {
-      const offset = findOffset(containerElement, wrapperNode.lastChild, 0);
-      if (offset === start) {
-        start += wrapperNode.lastChild.textContent.length;
+    if (wrapperNode
+      && !wrapperNode.classList.contains('md-expand')
+      && wrapperNode.firstChild
+    ) {
+      const frontTokenNode = wrapperNode.firstChild;
+      const tokenOffset = findOffset(containerElement, frontTokenNode, 0);
+      const tokenLength = frontTokenNode.textContent.length;
+      const tokenEndOffset = tokenOffset + tokenLength;
+      if (start === tokenEndOffset) {
+        start -= tokenLength;
+      }
+      if (end === tokenEndOffset) {
+        end -= tokenLength;
       }
     }
   }
   if (focusNode.textContent.length === focusOffset) {
     const wrapperNode = findBiggestInlineWrapper(focusNode);
-    if (wrapperNode && !wrapperNode.classList.contains('md-expand')) {
-      const offset = findOffset(containerElement, wrapperNode.lastChild, 0);
-      if (offset === end) {
-        end += wrapperNode.lastChild.textContent.length;
+    if (wrapperNode
+      && !wrapperNode.classList.contains('md-expand')
+      && wrapperNode.lastChild
+    ) {
+      const backwardTokenNode = wrapperNode.lastChild;
+      const tokenOffset = findOffset(containerElement, backwardTokenNode, 0);
+      const tokenLength = backwardTokenNode.textContent.length;
+      if (start === tokenOffset) {
+        start += tokenLength;
+      }
+      if (end === tokenOffset) {
+        end += tokenLength;
       }
     }
   }
