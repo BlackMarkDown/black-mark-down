@@ -2,12 +2,9 @@ import elementToMarkdown from './elementToMarkdown';
 import expand from './expand';
 import restoreSelection from './restoreSelection';
 import getStartAndEndIndexes from './getStartAndEndIndexes';
+import onDelete from './onDelete';
+import isDeleteEvent from './isDeleteEvent';
 import render from './render';
-
-function isDeleteEvent(event) {
-  const keys = ['Backspace', 'Delete'];
-  return event && keys.includes(event.key);
-}
 
 export default class Editor {
   constructor(element) {
@@ -17,6 +14,11 @@ export default class Editor {
       if (isDeleteEvent(event)) {
         event.preventDefault();
       }
+      /*
+      if (event.key === 'Enter' && event.shiftKey) {
+        event.preventDefault();
+        document.execCommand('insertHTML', false, '\n');
+      }*/
       setTimeout(() => this.update(event));
     });
     element.addEventListener('mouseup', (event) => {
@@ -25,46 +27,43 @@ export default class Editor {
     this.update();
   }
   update(event) {
+    let text = elementToMarkdown(this.element);
+
+    if (text) {
+      const rendered = render(text);
+      const cloned = this.element.cloneNode();
+      cloned.innerHTML = rendered;
+      const reMarkdown = elementToMarkdown(cloned);
+
+      console.log('\n\n\n\n\n\n\n\n\n\n');
+      console.log('text', text === reMarkdown);
+      console.log(this.element.innerHTML);
+      console.log(text, text.length);
+      console.log(rendered);
+      console.log(reMarkdown, reMarkdown.length);
+    }
+
     // NOTE: Should get indexes before reseting innerHTML
     // because Selection would be destroyed after reseting innerHTML
     let {
       start,
       end,
     } = getStartAndEndIndexes(this.element);
+    console.log(start, end);
 
-    let text = elementToMarkdown(this.element);
+    ({
+      start,
+      end,
+      text,
+    } = onDelete({
+      containerElement: this.element,
+      event,
+      start,
+      end,
+      text,
+    }));
 
-    if (isDeleteEvent(event)) {
-      let deleteLeftOffset;
-      let deleteRightOffset;
-      if (start === end) {
-        if (event.key === 'Delete') {
-          deleteLeftOffset = start;
-          deleteRightOffset =
-            text[end] === '\n' && text[end + 1] === '\n'
-            ? end + 2
-            : end + 1;
-        } else if (event.key === 'Backspace') {
-          deleteLeftOffset =
-            text[start] === '\n' && text[start - 1] === '\n'
-            ? start - 2
-            : start - 1;
-          deleteRightOffset = end;
-        } else {
-          throw new Error('Unhandled delete event');
-        }
-      } else {
-        deleteLeftOffset = Math.min(start, end);
-        deleteRightOffset = Math.max(start, end);
-      }
-      text = `${text.substr(0, deleteLeftOffset)}${text.substr(deleteRightOffset)}`;
-      start = end = deleteLeftOffset;
-    }
-
-    const renderedHTML = text.split('\n').map(line =>
-      `<span class="md-line">${render(line) || '<br>'}</span>`
-    ).join('');
-
+    const renderedHTML = render(text);
     this.element.innerHTML = renderedHTML;
     expand(this.element, start, end);
     restoreSelection(this.element, start, end);

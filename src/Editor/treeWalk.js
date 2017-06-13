@@ -1,6 +1,7 @@
 const TEXT = '#text';
 const SPAN = 'SPAN';
 const BR = 'BR';
+const P = 'P';
 
 export default function treeWalk(containerElement, callback) {
   /* eslint no-bitwise: ["error", { "allow": ["|"] }] */
@@ -9,6 +10,7 @@ export default function treeWalk(containerElement, callback) {
   let offset = 0;
   let node = walker.nextNode();
   let isFirstLine = true;
+  let isFirstParagraph = true;
   while (node) {
     let markdownContent;
     const {
@@ -16,6 +18,13 @@ export default function treeWalk(containerElement, callback) {
     } = node;
 
     switch (nodeName) {
+      case P:
+        if (isFirstParagraph) {
+          isFirstParagraph = false;
+          break;
+        }
+        markdownContent = '\n\n';
+        break;
       case SPAN:
         if (node.classList.contains('md-line')) {
           if (isFirstLine) {

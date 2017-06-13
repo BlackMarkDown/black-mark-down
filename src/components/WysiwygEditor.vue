@@ -13,7 +13,7 @@
     <button v-on:click="post()">post</button>
     </div>
     <div id="editor" ref="editor" contenteditable="true">
-      <span class="md-line">12345asdf</span>
+      <p>12345asdf</p>
       <!--<p>
         <span md-inline="plain">assdfa</span>
         <span md-inline="strong_open">
@@ -212,12 +212,7 @@ p {
     width: 100%;
 }
 
-.md-line:empty:after {
-    content: '\200B';
-}
-
 #editor:after {
-    content: "";
     font-size: 0;
     display: block;
     height: 0;
