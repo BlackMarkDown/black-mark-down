@@ -12,18 +12,7 @@
     <button v-on:click="save()">save</button>
     <button v-on:click="post()">post</button>
     </div>
-    <div id="editor" ref="editor" contenteditable="true">
-      <p>12345asdf</p>
-      <!--<p>
-        <span md-inline="plain">assdfa</span>
-        <span md-inline="strong_open">
-          <span class="md-meta md-before">**</span>
-          <strong>
-            <span md-inline="plain">asdf</span>
-          </strong>
-          <span class="md-meta md-after">**</span>
-        </span>
-      </p>-->
+    <div id="editor" ref="editor">
     </div>
   </div>
 </template>
@@ -34,7 +23,7 @@ import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
-import Editor from '../Editor';
+import Editor from '../NewEditor';
 
 function fetchFile(vm, path) {
   Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
@@ -142,14 +131,6 @@ button {
   width: 100%;
   height: calc(100% - 30px);
 }
-#editor {
-  width: 100%;
-  height: 100%;
-  float: left;
-  border: 1px solid red;
-  padding-left: 35px;
-  padding-right: 35px;
-}
 
 * {
   box-sizing: border-box;
@@ -212,10 +193,40 @@ p {
     width: 100%;
 }
 
-#editor:after {
-    font-size: 0;
-    display: block;
-    height: 0;
+body {
+  overflow: hidden;
 }
 
+#editor {
+  width: 100%;
+  height: 100%;
+  float: left;
+  border: 1px solid red;
+  padding-left: 35px;
+  padding-right: 35px;
+}
+#upper-view {
+  width: 100%;
+  height: 200px;
+  border: 1px solid blue;
+  overflow: hidden;
+  padding-top: 200px;
+}
+#upper-view-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+#code-editor {
+  width: 100%;
+  height: 100px;
+}
+.CodeMirror {
+  height: 108px;
+  min-height: 0;
+  padding: 0px;
+}
+.CodeMirror-scroll {
+  min-height: 0;
+}
 </style>
