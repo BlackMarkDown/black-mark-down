@@ -4,41 +4,70 @@ import CodeMirror from 'codemirror';
 const reader = new Commonmark.Parser();
 const writer = new Commonmark.HtmlRenderer({ sourcepos: true });
 
+function parseSourcepos(sourcepos) { // #:#-#:#
+  const start = parseInt(sourcepos, 10);
+  const dashIndex = sourcepos.indexOf('-');
+  const end = parseInt(sourcepos.substring(dashIndex + 1), 10);
+  return {
+    start,
+    end,
+  };
+}
+
 function findBoundNode(node, line) {
-  for (let i = 0; i < node.childNodes.length; i += 1) {
-    const child = node.childNodes[i];
-    if (child.dataset && child.dataset.sourcepos) {
-      const sourcepos = child.dataset.sourcepos; // #:#-#:#
-      const start = parseInt(sourcepos, 10);
-      const dashIndex = sourcepos.indexOf('-');
-      const end = parseInt(sourcepos.substring(dashIndex + 1), 10);
+  let previousChild;
+  for (let i = 0; i < node.children.length; i += 1) {
+    const child = node.children[i];
+    const sourcepos = child.dataset.sourcepos;
+    if (sourcepos) {
+      const {
+        start,
+        end,
+      } = parseSourcepos(sourcepos);
       if (start <= line && line <= end) {
         return findBoundNode(child, line) || child;
       } else if (line < start) {
-        return null;
+        return previousChild;
       }
+      previousChild = child;
     }
   }
   return null;
+}
+
+function findNextNode(node) {
+  return node.nextElementSibling
+  ? node.nextElementSibling
+  : findNextNode(node.parentElement);
 }
 
 export default class Editor {
   constructor(element) {
     this.element = element;
 
-    const upperView = document.createElement('div');
-    upperView.id = 'upper-view';
-    element.appendChild(upperView);
-    this.upperView = upperView;
+    const topView = document.createElement('div');
+    topView.id = 'top-view';
+    element.appendChild(topView);
+    this.topView = topView;
 
-    const upperViewContent = document.createElement('div');
-    upperViewContent.id = 'upper-view-content';
-    upperView.appendChild(upperViewContent);
-    this.upperViewContent = upperViewContent;
+    const topViewContent = document.createElement('div');
+    topViewContent.id = 'top-view-content';
+    topView.appendChild(topViewContent);
+    this.topViewContent = topViewContent;
 
     const codeEditor = document.createElement('code-editor');
     codeEditor.id = 'code-editor';
     element.appendChild(codeEditor);
+
+    const bottomView = document.createElement('div');
+    bottomView.id = 'bottom-view';
+    element.appendChild(bottomView);
+    this.bottomView = bottomView;
+
+    const bottomViewContent = document.createElement('div');
+    bottomViewContent.id = 'bottom-view-content';
+    bottomView.appendChild(bottomViewContent);
+    this.bottomViewContent = bottomViewContent;
 
     const codeMirror = new CodeMirror(codeEditor, {
       scrollbarStyle: null,
@@ -46,6 +75,8 @@ export default class Editor {
       lineNumbers: true,
     });
     this.codeMirror = codeMirror;
+
+    this.previousScrollTop = 0;
 
 
     fetch('https://raw.githubusercontent.com/markdown-it/markdown-it/master/README.md')
@@ -60,16 +91,72 @@ export default class Editor {
         const {
           line,
         } = this.codeMirror.getCursor();
-        this.updateUpperView(line + 1);
+        console.log(this.codeMirror.cursorCoords());
+        this.updateBottomView(line + 1);
+        this.updateCodeMirror(line + 1);
+        this.updateTopView(line + 1);
       });
     });
   }
-  updateUpperView(cursorLine) {
+  updateTopView(cursorLine) {
     const text = this.codeMirror.getValue();
     const node = reader.parse(text);
     const html = writer.render(node);
-    this.upperViewContent.innerHTML = html;
-    const boundNode = findBoundNode(this.upperViewContent, cursorLine);
+    this.topViewContent.innerHTML = html;
+    const boundNode = findBoundNode(this.topViewContent, cursorLine);
     boundNode.scrollIntoView(false);
+  }
+  updateBottomView(cursorLine) {
+    const text = this.codeMirror.getValue();
+    const node = reader.parse(text);
+    const html = writer.render(node);
+    this.bottomViewContent.innerHTML = html;
+    const boundNode = findBoundNode(this.bottomViewContent, cursorLine);
+    const nextNode = findNextNode(boundNode);
+    nextNode.scrollIntoView(true);
+  }
+  updateCodeMirror(cursorLine) {
+    // NOTE Assume that bottom view already updated
+    const boundNode = findBoundNode(this.bottomViewContent, cursorLine);
+    const nextNode = findNextNode(boundNode);
+    const start = parseSourcepos(boundNode.dataset.sourcepos).end;
+    const end = parseSourcepos(nextNode.dataset.sourcepos).start;
+
+    let height = 0;
+    for (let i = start; i < end; i += 1) {
+      const line = this.codeMirror.getLineHandle(i - 1);
+      height += line.height;
+    }
+    const wrapperElement = this.codeMirror.getWrapperElement();
+    wrapperElement.parentElement.style.height = `${height}px`;
+    wrapperElement.style.height = `${height}px`;
+
+    let scrollTop = 6;
+    for (let i = 0; i < parseSourcepos(boundNode.dataset.sourcepos).start - 1; i += 1) {
+      const line = this.codeMirror.getLineHandle(i);
+      scrollTop += line.height;
+    }
+
+    this.codeMirror.scrollTo(0, scrollTop);
+    console.log('scrollTop', scrollTop);
+
+
+    // let lineOffsetTop = 0;
+    // for (let i = 0; i < cursorLine - 1; i += 1) {
+    //   const line = this.codeMirror.getLineHandle(i);
+    //   lineOffsetTop += line.height;
+    // }
+    const {
+      top: cursorTop,
+    } = this.codeMirror.cursorCoords(true, 'page');
+    const deltaY = cursorTop - 200 - (scrollTop - this.previousScrollTop);
+    const currentHeight = parseFloat(window.getComputedStyle(this.topView).height, 10);
+    this.topView.style.height = `${currentHeight - deltaY}px`;
+    console.log(cursorTop, currentHeight, deltaY, scrollTop - this.previousScrollTop);
+
+    console.log(this.codeMirror.cursorCoords(true, 'page').top);
+    setTimeout(() => console.log(this.codeMirror.cursorCoords(true, 'page').top));
+
+    this.previousScrollTop = scrollTop;
   }
 }

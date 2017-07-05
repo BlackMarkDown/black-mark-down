@@ -205,24 +205,36 @@ body {
   padding-left: 35px;
   padding-right: 35px;
 }
-#upper-view {
+#top-view {
   width: 100%;
   height: 200px;
   border: 1px solid blue;
   overflow: hidden;
-  padding-top: 200px;
 }
-#upper-view-content {
+#top-view-content {
   width: 100%;
   height: 100%;
   position: relative;
+  padding-top: 200px;
+}
+#bottom-view {
+  width: 100%;
+  height: 200px;
+  border: 1px solid blue;
+  overflow: hidden;
+}
+#bottom-view-content {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  padding-top: 200px;
 }
 #code-editor {
   width: 100%;
   height: 100px;
 }
 .CodeMirror {
-  height: 108px;
+  height: 21.6px;
   min-height: 0;
   padding: 0px;
 }
