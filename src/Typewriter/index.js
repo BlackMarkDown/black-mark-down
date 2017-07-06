@@ -43,10 +43,14 @@ function findBoundNode(node, line) {
   return null;
 }
 
-function findNextNode(node) {
-  return node.nextElementSibling
-  ? node.nextElementSibling
-  : findNextNode(node.parentElement);
+function findNextElemenet(element, rootElement) {
+  console.log(element, element.nextElementSibling);
+  if (element === rootElement) {
+    return null;
+  }
+  return element.nextElementSibling
+  ? element.nextElementSibling
+  : findNextElemenet(element.parentElement, rootElement);
 }
 
 export default class Editor {
@@ -111,7 +115,9 @@ export default class Editor {
     const html = writer.render(node);
     this.topViewContent.innerHTML = html;
     const boundNode = findBoundNode(this.topViewContent, cursorLine);
-    boundNode.scrollIntoView(false);
+    if (boundNode) {
+      boundNode.scrollIntoView(false);
+    }
   }
   updateBottomView(cursorLine) {
     const text = this.codeMirror.getValue();
@@ -119,17 +125,27 @@ export default class Editor {
     const html = writer.render(node);
     this.bottomViewContent.innerHTML = html;
     const boundNode = findBoundNode(this.bottomViewContent, cursorLine);
-    const nextNode = findNextNode(boundNode);
-    nextNode.scrollIntoView(true);
+    if (boundNode === null) {
+      return;
+    }
+    const nextNode = findNextElemenet(boundNode, this.bottomViewContent);
+    if (nextNode) {
+      nextNode.scrollIntoView(true);
+    } else {
+      this.bottomView.scrollTop = this.bottomViewContent.scrollHeight;
+    }
   }
   updateCodeMirror(cursorLine) {
     // NOTE Assume that bottom view already updated
     const boundNode = findBoundNode(this.bottomViewContent, cursorLine);
-    const nextNode = findNextNode(boundNode);
+    if (boundNode === null) {
+      return;
+    }
+    const nextNode = findNextElemenet(boundNode, this.bottomViewContent);
     const start = getPosition(boundNode).start;
-    const end = getPosition(nextNode).start;
+    const end = nextNode ? getPosition(nextNode).start : this.codeMirror.lineCount() + 1;
 
-    let height = 0;
+    let height = 6;
     for (let i = start; i < end; i += 1) {
       const line = this.codeMirror.getLineHandle(i - 1);
       height += line.height;

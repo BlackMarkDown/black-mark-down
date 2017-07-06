@@ -208,26 +208,24 @@ body {
 #top-view {
   width: 100%;
   height: 200px;
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
   overflow: hidden;
 }
 #top-view-content {
   width: 100%;
-  height: 100%;
   position: relative;
   padding-top: 200px;
 }
 #bottom-view {
   width: 100%;
   height: 200px;
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
   overflow: hidden;
 }
 #bottom-view-content {
   width: 100%;
-  height: 100%;
   position: relative;
-  padding-top: 200px;
+  padding-bottom: 200px;
 }
 #code-editor {
   width: 100%;
