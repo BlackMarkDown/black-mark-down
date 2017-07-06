@@ -4,7 +4,16 @@ import CodeMirror from 'codemirror';
 const reader = new Commonmark.Parser();
 const writer = new Commonmark.HtmlRenderer({ sourcepos: true });
 
-function parseSourcepos(sourcepos) { // #:#-#:#
+function getPosition(node) {
+  if (node.nodeName === 'PRE') {
+    return getPosition(node.children[0]);
+  }
+  const {
+    sourcepos, // #:#-#:#
+  } = node.dataset;
+  if (!sourcepos) {
+    return getPosition(node.parentElement);
+  }
   const start = parseInt(sourcepos, 10);
   const dashIndex = sourcepos.indexOf('-');
   const end = parseInt(sourcepos.substring(dashIndex + 1), 10);
@@ -18,12 +27,11 @@ function findBoundNode(node, line) {
   let previousChild;
   for (let i = 0; i < node.children.length; i += 1) {
     const child = node.children[i];
-    const sourcepos = child.dataset.sourcepos;
-    if (sourcepos) {
+    if (child.nodeName === 'PRE' || child.dataset.sourcepos) {
       const {
         start,
         end,
-      } = parseSourcepos(sourcepos);
+      } = getPosition(child);
       if (start <= line && line <= end) {
         return findBoundNode(child, line) || child;
       } else if (line < start) {
@@ -72,7 +80,7 @@ export default class Editor {
     const codeMirror = new CodeMirror(codeEditor, {
       scrollbarStyle: null,
       lineWrapping: true,
-      lineNumbers: true,
+      // lineNumbers: true,
     });
     this.codeMirror = codeMirror;
 
@@ -91,7 +99,6 @@ export default class Editor {
         const {
           line,
         } = this.codeMirror.getCursor();
-        console.log(this.codeMirror.cursorCoords());
         this.updateBottomView(line + 1);
         this.updateCodeMirror(line + 1);
         this.updateTopView(line + 1);
@@ -119,8 +126,8 @@ export default class Editor {
     // NOTE Assume that bottom view already updated
     const boundNode = findBoundNode(this.bottomViewContent, cursorLine);
     const nextNode = findNextNode(boundNode);
-    const start = parseSourcepos(boundNode.dataset.sourcepos).end;
-    const end = parseSourcepos(nextNode.dataset.sourcepos).start;
+    const start = getPosition(boundNode).start;
+    const end = getPosition(nextNode).start;
 
     let height = 0;
     for (let i = start; i < end; i += 1) {
@@ -131,32 +138,22 @@ export default class Editor {
     wrapperElement.parentElement.style.height = `${height}px`;
     wrapperElement.style.height = `${height}px`;
 
-    let scrollTop = 6;
-    for (let i = 0; i < parseSourcepos(boundNode.dataset.sourcepos).start - 1; i += 1) {
+    let scrollTop = 6; // border
+    for (let i = 0; i < start - 1; i += 1) {
       const line = this.codeMirror.getLineHandle(i);
       scrollTop += line.height;
     }
 
     this.codeMirror.scrollTo(0, scrollTop);
-    console.log('scrollTop', scrollTop);
 
-
-    // let lineOffsetTop = 0;
-    // for (let i = 0; i < cursorLine - 1; i += 1) {
-    //   const line = this.codeMirror.getLineHandle(i);
-    //   lineOffsetTop += line.height;
-    // }
     const {
       top: cursorTop,
     } = this.codeMirror.cursorCoords(true, 'page');
     const deltaY = cursorTop - 200 - (scrollTop - this.previousScrollTop);
     const currentHeight = parseFloat(window.getComputedStyle(this.topView).height, 10);
     this.topView.style.height = `${currentHeight - deltaY}px`;
-    console.log(cursorTop, currentHeight, deltaY, scrollTop - this.previousScrollTop);
-
-    console.log(this.codeMirror.cursorCoords(true, 'page').top);
-    setTimeout(() => console.log(this.codeMirror.cursorCoords(true, 'page').top));
 
     this.previousScrollTop = scrollTop;
+    window.codeMirror = this.codeMirror;
   }
 }

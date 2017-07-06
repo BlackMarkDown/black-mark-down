@@ -23,7 +23,7 @@ import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
-import Editor from '../NewEditor';
+import Editor from '../Typewriter';
 
 function fetchFile(vm, path) {
   Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
