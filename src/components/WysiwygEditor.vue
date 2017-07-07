@@ -139,58 +139,9 @@ button {
 </style>
 
 <style>
-
-.md-empty .md-meta,
-.md-expand .md-meta,
-.md-expand .md-content,
-.md-expand.md-meta,
-.md-expand.md-content {
-    display: inline;
-}
-
-#write.md-expand .md-meta,
-#write.md-expand .md-content {
-    display: inline !important;
-}
-
-img {
-    cursor: default;
-    border-left: 2px transparent solid;
-    border-right: 4px transparent solid;
-}
-
-.md-expand>img {
-    display: none;
-}
-
-.md-content {
-    display: none;
-    color: #5b808d;
-}
-
-.md-meta {
-    display: none;
-    color: #BBBBBB;
-}
-
-.md-before,
-.md-after {
-    padding: 0px;
-}
-
 p {
-  white-space: pre-wrap;
   word-break: normal;
   word-wrap: break-word;
-}
-
-*:before, *:after, * {
-    box-sizing: border-box;
-}
-
-.md-line {
-    display: block;
-    width: 100%;
 }
 
 body {
@@ -228,7 +179,7 @@ body {
   padding-bottom: 200px;
 }
 #code-editor {
-  width: 100%;
+  width: auto;
   height: 100px;
 }
 .CodeMirror {

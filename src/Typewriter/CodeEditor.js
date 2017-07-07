@@ -84,7 +84,7 @@ export default class BottomView {
       // lineNumbers: true,
     });
     this.codeMirror = codeMirror;
-    window.codeMirror = codeMirror;
+    window.codeMirror = codeMirror; // for debuging
   }
   update({
     cursorLine,
