@@ -23,7 +23,7 @@ import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
-import Editor from '../Typewriter';
+import Typewriter from '../Typewriter';
 
 function fetchFile(vm, path) {
   Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
@@ -83,7 +83,7 @@ export default {
       return newFilePath;
     },
     initEditor() {
-      this.$data.editor = new Editor(this.$refs.editor);
+      this.$data.editor = new Typewriter(this.$refs.editor);
     },
   },
   mounted() {
