@@ -23,7 +23,7 @@ import IdentityManager from '../aws/IdentityManager';
 import PostManager from '../aws/PostManager';
 import Router from '../Router';
 import getFileOwner from '../utils/getFileOwner';
-import Editor from '../NewEditor';
+import Editor from '../Typewriter';
 
 function fetchFile(vm, path) {
   Explorer.getFile(path, Explorer.ObjectType.DRAFT_FILE)
@@ -205,24 +205,34 @@ body {
   padding-left: 35px;
   padding-right: 35px;
 }
-#upper-view {
+#top-view {
   width: 100%;
   height: 200px;
-  border: 1px solid blue;
+  /*border: 1px solid blue;*/
   overflow: hidden;
+}
+#top-view-content {
+  width: 100%;
+  position: relative;
   padding-top: 200px;
 }
-#upper-view-content {
+#bottom-view {
   width: 100%;
-  height: 100%;
+  height: 200px;
+  /*border: 1px solid blue;*/
+  overflow: hidden;
+}
+#bottom-view-content {
+  width: 100%;
   position: relative;
+  padding-bottom: 200px;
 }
 #code-editor {
   width: 100%;
   height: 100px;
 }
 .CodeMirror {
-  height: 108px;
+  height: 21.6px;
   min-height: 0;
   padding: 0px;
 }
