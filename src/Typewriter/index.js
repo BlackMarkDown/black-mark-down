@@ -24,4 +24,10 @@ export default class Typewriter {
       this.topView.update(data);
     });
   }
+  getText() {
+    return this.codeEditor.codeMirror.getValue();
+  }
+  setText(text) {
+    this.codeEditor.codemirror.setValue(text);
+  }
 }

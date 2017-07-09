@@ -53,7 +53,6 @@ export default {
   data() {
     return {
       filename: '',
-      content: '',
       rendered: '',
       isEditingFilename: false,
       md: undefined,
@@ -63,7 +62,8 @@ export default {
   methods: {
     save() {
       const newFilePath = this.generateNewFilePath();
-      PostManager.saveWhileEditing(newFilePath, this.$data.content)
+      const content = this.$data.editor.getText();
+      PostManager.saveWhileEditing(newFilePath, content)
       .then((path) => {
         Router.replace(`/edit/${path}`);
         alert('Successfully saved');
@@ -72,7 +72,8 @@ export default {
     },
     post() {
       const newFilePath = this.generateNewFilePath();
-      PostManager.post(newFilePath, this.$data.content)
+      const content = this.$data.editor.getText();
+      PostManager.post(newFilePath, content)
       .then(path => Router.push(`/view/${path}`));
     },
     generateNewFilePath() {
@@ -88,7 +89,8 @@ export default {
   },
   mounted() {
     this.initEditor();
-    fetchFile(this, this.$route.params.path);
+    fetchFile(this, this.$route.params.path)
+    .then(text => this.$data.editor.setText(text));
   },
   beforeRouteEnter(to, from, next) {
     checkIsOwner(to.params.path)
